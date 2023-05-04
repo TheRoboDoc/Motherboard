@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="blacklist" xml:space="preserve">
+    <value>["Ass","Asshole","Homosexual","Homophobic","Racist","Gay","Lgbt","Jew","Jewish","Anti-semitic","Muslims","Muslim","Isis","Islamophobe","homophobe","Bombing","Sexyhot","Bastard","Bitch","Fucker","Cunt","Fuck","Goddamn","Shit","Motherfucker","Nigga","Nigger","Prick","Shit","shitass","Shitass","sonofabitch","Whore","Thot","Slut","Faggot","Dick","Pussy","Penis","Vagina","Negro","Coon","Bitched","Sexist","Cock","Sucker","Rape","Molest","Anal","Buttrape","Coont","Cancer","Sex","Retard","Fuckface","Dumbass","5h1t","5hit","A_s_s","a2m","a55","anal","analimpaler†††","analleakage†††","anilingus","anus","ass","assfuck†††","asses","assfucker","ass-fucker","assfukka","asshole","asshole","assholes","assmucus†††","assmunch","asswhole","autoerotic","b!tch","b00bs","b17ch","b1tch","ballbag","ballsack","bang(one's)box†††","bangbros","bareback","bastard","beastial","beastiality","beefcurtain†††","bellend","bestial","bestiality","bi+ch","biatch","bimbos","birdlock","bitch","bitchtit†††","bitcher","bitchers","bitches","bitchin","bitching","blowjob","blowme†††","blowmud†††","blowjob","blowjobs","bluewaffle†††","blumpkin†††","boiolas","boner","boob","boobs","booobs","boooobs","booooobs","booooooobs","buceta","bugger","bum","bunnyfucker","bustaload†††","busty","butt","buttfuck†††","butthole","buttmuch","buttplug","c0ck","c0cksucker","carpetmuncher","carpetmuncher","cawk","chink","choade†††","chotabags†††","cipa","cl1t","clit","clitlicker†††","clitoris","clits","clittylitter†††","clusterfuck","cnut","cock","cockpocket†††","cocksnot†††","cockface","cockhead","cockmunch","cockmuncher","cocks","cocksuck","cocksucked","cocksucker","cock-sucker","cocksucking","cocksucks","cocksuka","cocksukka","cok","cokmuncher","coksucka","coon","copsomewood†††","cornhole†††","corpwhore†††","cox","cum","cumchugger†††","cumdumpster†††","cumfreak†††","cumguzzler†††","cumdump†††","cummer","cumming","cums","cumshot","cunilingus","cunillingus","cunnilingus","cunt","cunthair†††","cuntbag†††","cuntlick","cuntlicker","cuntlicking","cunts","cuntsicle†††","cunt-struck†††","cutrope†††","cyalis","cyberfuc","cyberfuck","cyberfucked","cyberfucker","cyberfuckers","cyberfucking","d1ck","dick","dickhole†††","dickshy†††","dickhead","dildo","dildos","dink","dinks","dirsa","dirtySanchez†††","dlck","dog-fucker","doggiestyle","doggiestyle","doggin","dogging","donkeyribber","eatadick†††","eathairpie†††","ejaculate","ejaculated","ejaculates","ejaculating","ejaculatings","ejaculation","ejakulate","erotic","fuck","fucker","f_u_c_k","f4nny","facial†††","fag","fagging","faggitt","faggot","faggs","fagot","fagots","fags","fanny","fannyflaps","fannyfucker","fanyy","fatass","fcuk","fcuker","fcuking","feck","fecker","felching","fellate","fellatio","fingerfuck","fingerfucked","fingerfucker","fingerfuckers","fingerfucking","fingerfucks","fistfuck†††","fistfuck","fistfucked","fistfucker","fistfuckers","fistfucking","fistfuckings","fistfucks","flange","flogthelog†††","fook","fooker","fuckhole†††","fuckpuppet†††","fucktrophy†††","fuckyomama†††","fuck†††","fucka","fuck-ass†††","fuck-bitch†††","fucked","fucker","fuckers","fuckhead","fuckheads","fuckin","fucking","fuckings","fuckingshitmotherfucker","fuckme","fuckmeat†††","fucks","fucktoy†††","fuckwhit","fuckwit","fudgepacker","fudgepacker","fuk","fuker","fukker","fukkin","fuks","fukwhit","fukwit","fux","fux0r","gangbang","gangbang†††","gang-bang†††","gangbanged","gangbangs","gassyass†††","gaylord","gaysex","goatse","hamflap†††","hardcoresex","heshe","hoar","hoare","hoer","homoerotic","hore","horniest","horny","hotsex","howtokill","howtomurdep","jackoff","jack-off","jap","jerk","jerk-off","jism","jiz","jizm","jizz","kawk","kinkyJesus†††","knob","knobend","knobead","knobed","knobend","knobend","knobhead","knobjocky","knobjokey","kock","kondum","kondums","kum","kummer","kumming","kums","kunilingus","kwif†††","l3i+ch","l3itch","labia","LEN","lust","lusting","m0f0","m0fo","m45terbate","ma5terb8","ma5terbate","mafugly†††","masochist","masterb8","masterbat*","masterbat3","masterbate","master-bate","masterbation","masterbations","masturbate","mof0","mofo","mo-fo","mothafuck","mothafucka","mothafuckas","mothafuckaz","mothafucked","mothafucker","mothafuckers","mothafuckin","mothafucking","mothafuckings","mothafucks","motherfucker","motherfucker†††","motherfuck","motherfucked","motherfucker","motherfuckers","motherfuckin","motherfucking","motherfuckings","motherfuckka","motherfucks","muff","muffpuff†††","mutha","muthafecker","muthafuckker","muther","mutherfucker","n1gga","n1gger","nazi","needthedick†††","nigg3r","nigg4h","nigga","niggah","niggas","niggaz","nigger","niggers","numbnuts","nutbutter†††","nutsack","orgasim","orgasims","orgasm","orgasms","p0rn","pecker","penis","penisfucker","phonesex","phuck","phuk","phuked","phuking","phukked","phukking","phuks","phuq","pigfucker","pimpis","piss","pissed","pisser","pissers","pisses","pissflaps","pissin","pissing","pissoff","poop","porn","porno","pornography","pornos","prick","pricks","pron","pube","pusse","pussi","pussies","pussy","pussyfart†††","pussypalace†††","pussys","queaf†††","queer","rectum","retard","rimjaw","rimming","shit","s.o.b.","s_h_i_t","sadism","sadist","sandbar†††","sausagequeen†††","schlong","screwing","scroat","scrote","scrotum","semen","sex","sh!+","sh!t","sh1t","shag","shagger","shaggin","shagging","shemale","shi+","shit","shitfucker†††","shitdick","shite","shited","shitey","shitfuck","shitfull","shithead","shiting","shitings","shits","shitted","shitter","shitters","shitting","shittings","shitty","skank","slope†††","slut","slutbucket†††","sluts","smegma","smut","snatch","son-of-a-bitch","spac","spunk","t1tt1e5","t1tties","teets","teez","testical","testicle","titwank†††","titfuck","tits","titt","tittie5","tittiefucker","titties","tittyfuck","tittywank","titwank","tosser","turd","tw4t","twat","twathead","twatty","twunt","twunter","v14gra","v1gra","vagina","viagra","vulva","w00se","wank","wanker","wanky","whoar","whore","wtf","xrated","sucker","dumbass","Kys","Kill","Die","Shooting","Shoot","Bomb","Terrorist","Terrorism","Bombed","Trump","Maga","Conservative","Makeamericagreatagain","Farright","Necrophilia","Mongoloid","Furfag","Cp","Pedo","Pedophile","Pedophilia","Childpredator","Predatory","Depression","Cutmyself","Iwanttodie","Loli","Lolicon","69","9/11","Terrorism","Terrorist","Obama","Biden"]</value>
+  </data>
+</root>
