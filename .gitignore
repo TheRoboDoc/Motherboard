@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /Motherboard/Tokens.resx
 /Motherboard/Tokens.Designer.cs
+/MotherboardBuildLinux/Motherboard
