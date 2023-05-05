@@ -58,7 +58,6 @@ namespace Motherboard
                 Intents =
                 DiscordIntents.MessageContents |
                 DiscordIntents.Guilds |
-                DiscordIntents.GuildVoiceStates |
                 DiscordIntents.GuildPresences |
                 DiscordIntents.GuildMessages,
 
