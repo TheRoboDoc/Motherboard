@@ -98,7 +98,6 @@ namespace Motherboard.Response
                     string name = Regex.Replace(messageArgs.Message.Content, "<@!?(\\d+)>", "");
 
                     // Create the thread
-                    Program.botClient?.Logger.LogDebug("Thread trigger");
                     DiscordThreadChannel thread = await messageArgs.Channel.CreateThreadAsync(messageArgs.Message, name, AutoArchiveDuration.Day,
                                 $"{messageArgs.Author.Mention} interacted multiple times in a row with the bot");
 
@@ -108,16 +107,12 @@ namespace Motherboard.Response
 
             _ = Task.Run(async () =>
             {
-                Program.botClient.Logger.LogDebug("Typing");
                 Task typing = replyIn.TriggerTypingAsync();
 
-                Program.botClient.Logger.LogDebug("Text Generation");
                 Tuple<bool, string> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
-                Program.botClient.Logger.LogDebug("Text Generated");
 
                 string response = AIGenerationResponse.Item2;
 
-                Program.botClient.Logger.LogDebug("Sending");
                 if (AIGenerationResponse.Item1)
                 {
                     await replyIn.SendMessageAsync(response);
