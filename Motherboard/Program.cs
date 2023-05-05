@@ -112,17 +112,22 @@ namespace Motherboard
 
             Random rand = new Random();
 
-            //The bot has a tendency to lose it's current activity if it gets disconnected
-            //This is why we periodically (on every heartbeat) set it to the correct one
+            //The bot has a tendency to lose it's current activity if it gets disconnected.
+            //For some reason with DSharpPlus it happens once in a while
+            //This is why we periodically (on every heartbeat) set it to something
             botClient.Heartbeated += async (client, e) =>
             {
                 DiscordActivity activity;
 
-                activityText = rand.Next(1, 4) switch
+                activityText = rand.Next(1, 8) switch
                 {
                     1 => "Vacuuming",
                     2 => "Doing the dishes",
-                    3 => "Dusting off furnature",
+                    3 => "Dusting off furniture",
+                    4 => "Preparing food",
+                    5 => "Cleaning the floor",
+                    6 => "Doing laundry",
+                    7 => "Drinking wine",
                     _ => "Recharging",
                 };
 
