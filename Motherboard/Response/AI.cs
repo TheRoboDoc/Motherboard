@@ -127,15 +127,17 @@ namespace Motherboard.Response
                 }
                 else if (!discordMessage.Author.IsBot)
                 {
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
-                    Program.botClient.Logger.LogDebug("Added from user");
+                    messages.Add(
+                        ChatMessage.FromUser
+                        ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
                 }
 
                 if (Program.DebugStatus())
                 {
                     using (StreamWriter writer = new StreamWriter("debugconvo.txt", true))
                     {
-                        writer.WriteLine($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
+                        writer.WriteLine
+                            ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
                     }
                 }
             }
