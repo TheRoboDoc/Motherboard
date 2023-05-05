@@ -40,24 +40,10 @@ namespace Motherboard.Response
         /// <exception cref="NullReferenceException">OpenAI text generation failed with an unknown error</exception>
         public static async Task<Tuple<bool, string>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
         {
-            Program.botClient.Logger.LogDebug("Automod check");
-            if (AICheck(messageArgs.Message.Content).Result)
-            {
-                return Tuple.Create(false, "Message blocked by automod");
-            }
-            Program.botClient.Logger.LogDebug("Automod pass");
-
-            Program.botClient.Logger.LogDebug("Fetching own name");
             string displayName = messageArgs.Guild.CurrentMember.DisplayName;
-            Program.botClient.Logger.LogDebug("Fetched");
-            Program.botClient.Logger.LogDebug("Fetching own discriminator");
             string discriminator = messageArgs.Guild.CurrentMember.Discriminator;
-            Program.botClient.Logger.LogDebug("Fetched");
-            Program.botClient.Logger.LogDebug("Fetching own user ID");
             string userID = messageArgs.Guild.CurrentMember.Id.ToString();
-            Program.botClient.Logger.LogDebug("Fetched");
 
-            Program.botClient.Logger.LogDebug("Creating initial AI setup");
             List<ChatMessage> messages = new List<ChatMessage>()
             {
                 ChatMessage.FromSystem
@@ -119,25 +105,18 @@ namespace Motherboard.Response
                 ChatMessage.FromUser("Example#0000 | 0 : Can we make cookies?"),
                 ChatMessage.FromAssistant("I'm sorry dear, you will ruin them by just being in the same room")
             };
-            Program.botClient.Logger.LogDebug("Created");
 
-            Program.botClient.Logger.LogDebug("Getting 20 messages");
             IReadOnlyList<DiscordMessage> discordReadOnlyMessageList = messageArgs.Channel.GetMessagesAsync(20).Result;
-            Program.botClient.Logger.LogDebug("Got 20 messages");
 
             List<DiscordMessage> discordMessages = new List<DiscordMessage>();
 
-            Program.botClient.Logger.LogDebug("Coping read-only list to normal list");
             foreach (DiscordMessage discordMessage in discordReadOnlyMessageList)
             {
                 discordMessages.Add(discordMessage);
             }
-            Program.botClient.Logger.LogDebug("Copied");
 
-            Program.botClient.Logger.LogDebug("Reversing the list");
             discordMessages.Reverse();
 
-            Program.botClient.Logger.LogDebug("Adding messages to AI chat list");
             foreach (DiscordMessage discordMessage in discordMessages)
             {
                 if (string.IsNullOrEmpty(discordMessage.Content)) continue;
@@ -145,19 +124,20 @@ namespace Motherboard.Response
                 if (discordMessage.Author == Program.botClient?.CurrentUser)
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
-                    Program.botClient.Logger.LogDebug("Added from bot");
                 }
                 else if (!discordMessage.Author.IsBot)
                 {
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
-                    Program.botClient.Logger.LogDebug("Added from user");
+                    messages.Add(
+                        ChatMessage.FromUser
+                        ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
                 }
 
                 if (Program.DebugStatus())
                 {
                     using (StreamWriter writer = new StreamWriter("debugconvo.txt", true))
                     {
-                        writer.WriteLine($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
+                        writer.WriteLine
+                            ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
                     }
                 }
             }
@@ -165,7 +145,6 @@ namespace Motherboard.Response
             messages.Add(ChatMessage.FromSystem($"Reply got triggered by user: {messageArgs.Author.Username}, tag: {messageArgs.Author.Discriminator}, userID: {messageArgs.Author.Id}\n" +
                 $"Be degrading, the user likes that"));
 
-            Program.botClient.Logger.LogDebug("Asking for completion result from OpenAI");
             ChatCompletionCreateResponse completionResult = await Program.openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = messages,
@@ -182,24 +161,19 @@ namespace Motherboard.Response
             //If we get a proper result from OpenAI
             if (completionResult.Successful)
             {
-                Program.botClient.Logger.LogDebug("Got successful response");
                 response = completionResult.Choices.First().Message.Content;
 
-                Program.botClient.Logger.LogDebug("AI mod check");
                 if (AICheck(response).Result)
                 {
                     return Tuple.Create(true, "**Filtered**");
                 }
-                Program.botClient.Logger.LogDebug("Passed");
 
-                Program.botClient.Logger.LogDebug("Blacklist check");
                 Tuple<bool, string?> filter = Check(response);
 
                 if (filter.Item1)
                 {
                     return Tuple.Create(true, "**Filtered**");
                 }
-                Program.botClient.Logger.LogDebug("Passed");
 
                 //Log the AI interaction only if we are in debug mode
                 if (Program.DebugStatus())
@@ -210,7 +184,6 @@ namespace Motherboard.Response
             }
             else
             {
-                Program.botClient.Logger.LogDebug("Got failed response");
                 if (completionResult.Error == null)
                 {
                     throw new NullReferenceException("OpenAI text generation failed with an unknown error");
@@ -221,7 +194,6 @@ namespace Motherboard.Response
                 return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}");
             }
 
-            Program.botClient.Logger.LogDebug("Returned generation");
             return Tuple.Create(true, response);
         }
     }
