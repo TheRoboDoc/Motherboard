@@ -17,8 +17,8 @@ namespace Motherboard.Response
         /// <param name="messageArgs">Discord message creation arguments</param>
         /// <returns>Completed task</returns>
         public static async Task Run(DiscordClient sender, MessageCreateEventArgs messageArgs)
-        {
-            if (messageArgs.Author.IsBot) return;
+        {                                                                        //Robit ID
+            if (messageArgs.Author.IsBot && messageArgs?.Author.Id.ToString() != "1049457745763500103") return;
 
             if (await DiscordNoobFailsafe(messageArgs)) return;
 
@@ -30,7 +30,7 @@ namespace Motherboard.Response
             DiscordChannel replyIn = messageArgs.Channel;
 
             // We want to reply if the message was sent in a thread that bot is a member of
-            if (replyIn.Type == ChannelType.PublicThread || replyIn.Type == ChannelType.PrivateThread)
+            if (replyIn.Type == ChannelType.PublicThread || replyIn.Type == ChannelType.PrivateThread && !messageArgs.Author.IsBot)
             {
                 DiscordThreadChannel threadChannel = (DiscordThreadChannel)replyIn;
 
@@ -61,7 +61,7 @@ namespace Motherboard.Response
                     return;
                 }
             }
-            else if (await CheckBotMention(messageArgs) == false)
+            else if (!await CheckBotMention(messageArgs))
             {
                 return;
             }

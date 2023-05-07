@@ -124,6 +124,12 @@ namespace Motherboard.Response
                 if (discordMessage.Author == Program.botClient?.CurrentUser)
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
+                }                                               //Robit ID
+                else if (discordMessage.Author.Id.ToString() == "1049457745763500103")
+                {
+                    messages.Add(
+                        ChatMessage.FromUser
+                        ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
                 }
                 else if (!discordMessage.Author.IsBot)
                 {
