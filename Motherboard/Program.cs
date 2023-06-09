@@ -14,7 +14,7 @@ namespace Motherboard
 {
     public class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             MainAsync().GetAwaiter().GetResult();
         }
@@ -22,8 +22,6 @@ namespace Motherboard
         public static DiscordClient? botClient;
 
         public static OpenAIService? openAiService;
-
-        public static string activityText = string.Empty;
 
         /// <summary>
         /// Main Thread
@@ -40,7 +38,7 @@ namespace Motherboard
 
             LogLevel logLevel;
 
-            if(DebugStatus())
+            if (DebugStatus())
             {
                 logLevel = LogLevel.Debug;
             }

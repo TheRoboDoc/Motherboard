@@ -140,13 +140,11 @@ namespace Motherboard.Response
 
                 if (Program.DebugStatus())
                 {
-                    using (StreamWriter writer = new StreamWriter("debugconvo.txt", true))
-                    {
+                    using StreamWriter writer = new StreamWriter("debugconvo.txt", true);
                         writer.WriteLine
                             ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
                     }
                 }
-            }
 
             messages.Add(ChatMessage.FromSystem($"Reply got triggered by user: {messageArgs.Author.Username}, tag: {messageArgs.Author.Discriminator}, userID: {messageArgs.Author.Id}\n" +
                 $"Be degrading, the user likes that"));
