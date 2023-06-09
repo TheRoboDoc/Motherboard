@@ -151,6 +151,11 @@ namespace Motherboard.Response
             messages.Add(ChatMessage.FromSystem($"Reply got triggered by user: {messageArgs.Author.Username}, tag: {messageArgs.Author.Discriminator}, userID: {messageArgs.Author.Id}\n" +
                 $"Be degrading, the user likes that"));
 
+            if (Program.openAiService == null)
+            {
+                return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc");
+            }
+
             ChatCompletionCreateResponse completionResult = await Program.openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = messages,
