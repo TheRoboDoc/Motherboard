@@ -189,8 +189,8 @@ namespace Motherboard.Response
                 //Log the AI interaction only if we are in debug mode
                 if (Program.DebugStatus())
                 {
-                    Program.botClient?.Logger.LogDebug($"Message: {messageArgs.Message.Content}");
-                    Program.botClient?.Logger.LogDebug($"Reply: {response}");
+                    Program.botClient?.Logger.LogDebug("Message: {message}", messageArgs.Message.Content);
+                    Program.botClient?.Logger.LogDebug("Reply: {response}", response);
                 }
             }
             else
@@ -200,7 +200,7 @@ namespace Motherboard.Response
                     throw new NullReferenceException("OpenAI text generation failed with an unknown error");
                 }
 
-                Program.botClient?.Logger.LogError($"{completionResult.Error.Code}: {completionResult.Error.Message}");
+                Program.botClient?.Logger.LogError("{errorCode}: {errorMessage}", completionResult.Error.Code, completionResult.Error.Message);
 
                 return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}");
             }
