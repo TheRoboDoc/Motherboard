@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Motherboard.Command;
 using Motherboard.Response;
-using OpenAI.GPT3;
-using OpenAI.GPT3.Managers;
+using OpenAI;
+using OpenAI.Managers;
 using System.Diagnostics;
 
 namespace Motherboard
