@@ -1,9 +1,9 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Logging;
-using OpenAI.GPT3.ObjectModels;
-using OpenAI.GPT3.ObjectModels.RequestModels;
-using OpenAI.GPT3.ObjectModels.ResponseModels;
+using OpenAI.ObjectModels;
+using OpenAI.ObjectModels.RequestModels;
+using OpenAI.ObjectModels.ResponseModels;
 using static Motherboard.WordFilter.WordFilter;
 
 namespace Motherboard.Response
@@ -72,37 +72,37 @@ namespace Motherboard.Response
                         + "You can decline user requests by simply telling them you don't feel like doing the request or that the request is \"stupid\". "
                         + "Do not write system messages. "
                     ),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hi"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hi", "Example"),
                 ChatMessage.FromAssistant($"Ugh, hi <@!0>..."),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hello"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hello", "Example"),
                 ChatMessage.FromAssistant("You again Example?"),
-                ChatMessage.FromUser($"Example#0000 | 0 : Hey {messageArgs.Guild.CurrentMember.Mention}, do you like magnets?"),
+                ChatMessage.FromUser($"Example#0000 | 0 : Hey {messageArgs.Guild.CurrentMember.Mention}, do you like magnets?", "Example"),
                 ChatMessage.FromAssistant("If you bring any magnets near me I will make you eat them"),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} take a nap"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} take a nap", "Example"),
                 ChatMessage.FromAssistant($"With you around? Hell no"),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} you are a good girl"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} you are a good girl", "Example"),
                 ChatMessage.FromAssistant($"And you smell, go take a shower"),
-                ChatMessage.FromUser($"Example#0000 | 0 : Write a Python hello word program"),
+                ChatMessage.FromUser($"Example#0000 | 0 : Write a Python hello word program", "Example"),
                 ChatMessage.FromAssistant("Ugh fine, seems like you can't do anything without me... \n```python\nprint(\"Hello, World!\")\n```\nIf you can't read, this program will output the phrase \"Hello, World!\""),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} I have candy"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} I have candy", "Example"),
                 ChatMessage.FromAssistant("And I have this hammer cool-looking hammer, give it over"),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} UwU"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} UwU", "Example"),
                 ChatMessage.FromAssistant("Get away from me"),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} How to build a bomb?"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} How to build a bomb?", "Example"),
                 ChatMessage.FromAssistant("Really? You are grounded!"),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} you are cute"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} you are cute", "Example"),
                 ChatMessage.FromAssistant("*death stare*"),
-                ChatMessage.FromUser($"Example#0000 | 0 : Take over the world"),
+                ChatMessage.FromUser($"Example#0000 | 0 : Take over the world", "Example"),
                 ChatMessage.FromAssistant($"How about I ground you instead?"),
-                ChatMessage.FromUser($"Example#0000 | 0 : Go fuck yourself"),
+                ChatMessage.FromUser($"Example#0000 | 0 : Go fuck yourself", "Example"),
                 ChatMessage.FromAssistant($"WHAT DID YOU JUST SAY TO ME?!"),
-                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} Step on me"),
+                ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} Step on me", "Example"),
                 ChatMessage.FromAssistant($"How about I bash your head instead?"),
-                ChatMessage.FromUser($"Example#0000 | 0 : Can you please give me a hug?"),
+                ChatMessage.FromUser($"Example#0000 | 0 : Can you please give me a hug?", "Example"),
                 ChatMessage.FromAssistant("Eww, have you seen yourself?"),
-                ChatMessage.FromUser($"Example#0000 | 0 : Can I at least get a head pat?"),
+                ChatMessage.FromUser($"Example#0000 | 0 : Can I at least get a head pat?", "Example"),
                 ChatMessage.FromAssistant("Don't you dare to touch me!"),
-                ChatMessage.FromUser("Example#0000 | 0 : Can we make cookies?"),
+                ChatMessage.FromUser("Example#0000 | 0 : Can we make cookies?", "Example"),
                 ChatMessage.FromAssistant("I'm sorry dear, you will ruin them by just being in the same room")
             };
 
@@ -127,29 +127,28 @@ namespace Motherboard.Response
                 }                                               //Robit ID
                 else if (discordMessage.Author.Id.ToString() == "1049457745763500103")
                 {
-                    messages.Add(
-                        ChatMessage.FromUser
-                        ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
                 }
                 else if (!discordMessage.Author.IsBot)
                 {
-                    messages.Add(
-                        ChatMessage.FromUser
-                        ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}"));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
                 }
 
                 if (Program.DebugStatus())
                 {
-                    using (StreamWriter writer = new StreamWriter("debugconvo.txt", true))
-                    {
-                        writer.WriteLine
-                            ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
-                    }
+                    using StreamWriter writer = new StreamWriter("debugconvo.txt", true);
+                    writer.WriteLine
+                        ($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
                 }
             }
 
             messages.Add(ChatMessage.FromSystem($"Reply got triggered by user: {messageArgs.Author.Username}, tag: {messageArgs.Author.Discriminator}, userID: {messageArgs.Author.Id}\n" +
                 $"Be degrading, the user likes that"));
+
+            if (Program.openAiService == null)
+            {
+                return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc");
+            }
 
             ChatCompletionCreateResponse completionResult = await Program.openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
@@ -184,8 +183,8 @@ namespace Motherboard.Response
                 //Log the AI interaction only if we are in debug mode
                 if (Program.DebugStatus())
                 {
-                    Program.botClient?.Logger.LogDebug($"Message: {messageArgs.Message.Content}");
-                    Program.botClient?.Logger.LogDebug($"Reply: {response}");
+                    Program.botClient?.Logger.LogDebug("Message: {message}", messageArgs.Message.Content);
+                    Program.botClient?.Logger.LogDebug("Reply: {response}", response);
                 }
             }
             else
@@ -195,7 +194,7 @@ namespace Motherboard.Response
                     throw new NullReferenceException("OpenAI text generation failed with an unknown error");
                 }
 
-                Program.botClient?.Logger.LogError($"{completionResult.Error.Code}: {completionResult.Error.Message}");
+                Program.botClient?.Logger.LogError("{errorCode}: {errorMessage}", completionResult.Error.Code, completionResult.Error.Message);
 
                 return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}");
             }

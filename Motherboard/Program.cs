@@ -6,24 +6,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Motherboard.Command;
 using Motherboard.Response;
-using OpenAI.GPT3;
-using OpenAI.GPT3.Managers;
+using OpenAI;
+using OpenAI.Managers;
 using System.Diagnostics;
 
 namespace Motherboard
 {
     public class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
+            while (true)
+            {
             MainAsync().GetAwaiter().GetResult();
+        }
         }
 
         public static DiscordClient? botClient;
 
         public static OpenAIService? openAiService;
-
-        public static string activityText = string.Empty;
 
         /// <summary>
         /// Main Thread
@@ -40,7 +41,7 @@ namespace Motherboard
 
             LogLevel logLevel;
 
-            if(DebugStatus())
+            if (DebugStatus())
             {
                 logLevel = LogLevel.Debug;
             }
@@ -97,7 +98,7 @@ namespace Motherboard
                     message += $"\t\t\t\t\t\t\t{dirMissingText}\n";
                 }
 
-                botClient.Logger.LogWarning(message);
+                botClient.Logger.LogWarning("{message}", message);
             }
 
             botClient.Ready += BotClient_Ready;
@@ -112,36 +113,75 @@ namespace Motherboard
 
             Random rand = new Random();
 
-            //The bot has a tendency to lose it's current activity if it gets disconnected.
-            //For some reason with DSharpPlus it happens once in a while
-            //This is why we periodically (on every heartbeat) set it to something
-            botClient.Heartbeated += async (client, e) =>
+            botClient.Heartbeated += StatusUpdate;
+
+            sbyte toggle = -1;
+            byte count = 0;
+
+            botClient.Zombied += async (sender, e) =>
             {
-                DiscordActivity activity;
-
-                activityText = rand.Next(1, 8) switch
+                if (count <= 4)
                 {
-                    1 => "Vacuuming",
-                    2 => "Doing the dishes",
-                    3 => "Dusting off furniture",
-                    4 => "Preparing food",
-                    5 => "Cleaning the floor",
-                    6 => "Doing laundry",
-                    7 => "Drinking wine",
-                    _ => "Recharging",
-                };
+                    count++;
+                    return;
+                }
 
-                activity = new DiscordActivity()
+                await Task.Run(() =>
                 {
-                    ActivityType = ActivityType.Playing,
-                    Name = activityText
+                    toggle = 0;
+                });
                 };
-
-                await client.UpdateStatusAsync(activity, UserStatus.Online, DateTimeOffset.Now);
-            };
 
             //Prevents the task from ending
-            await Task.Delay(-1);
+            await Task.Delay(toggle);
+
+            botClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
+        }
+
+        /// <summary>
+        /// Updates the bots status to a random predetermined value. 
+        /// This is called on hearthbeat event, thus requiring heartbeat event arguments
+        /// </summary>
+        /// <param name="sender">Discord client of the bot</param>
+        /// <param name="e">Heartbeat event's arguments</param>
+        /// <returns></returns>
+        private static async Task StatusUpdate(DiscordClient sender, HeartbeatEventArgs e)
+                {
+            Random random = new Random();
+
+            string[] statuses =
+            {
+                "Vacuuming",
+                "Doing the dishes",
+                "Dusting off furniture",
+                "Preparing food",
+                "Cleaning the floor",
+                "Doing laundry",
+                "Drinking wine",
+                "Making sandwiches",
+                "Laughing at you",
+                "Recharging"
+                };
+
+            string chosenStatus;
+
+            try
+            {
+                chosenStatus = statuses.ElementAt(random.Next(statuses.Length));
+            }
+            catch
+            {
+                botClient?.Logger.LogWarning("Failed to assigne status, defaulting");
+                chosenStatus = statuses.ElementAt(0);
+            }
+
+            DiscordActivity activity = new DiscordActivity()
+            {
+                ActivityType = ActivityType.Playing,
+                Name = chosenStatus
+            };
+
+            await sender.UpdateStatusAsync(activity, UserStatus.Online, DateTimeOffset.Now);
         }
 
         /// <summary>

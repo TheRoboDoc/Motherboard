@@ -1,6 +1,7 @@
-﻿using OpenAI.GPT3.ObjectModels.RequestModels;
-using OpenAI.GPT3.ObjectModels.ResponseModels;
+﻿using OpenAI.ObjectModels.RequestModels;
+using OpenAI.ObjectModels.ResponseModels;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Motherboard.WordFilter
 {
@@ -21,6 +22,11 @@ namespace Motherboard.WordFilter
         /// </returns>
         public static async Task<bool> AICheck(string sentence)
         {
+            if (Program.openAiService == null)
+            {
+                return false;
+            }
+
             CreateModerationResponse response = await Program.openAiService.CreateModeration(new CreateModerationRequest()
             {
                 Input = sentence
@@ -77,45 +83,10 @@ namespace Motherboard.WordFilter
         /// <returns>A string with removed special characters</returns>
         public static string SpecialCharacterRemoval(string aString)
         {
-            //There's a better way, but this works for now
-            aString = aString.Replace("+", " ");
-            aString = aString.Replace("`", " ");
-            aString = aString.Replace("¨", " ");
-            aString = aString.Replace("\'", " ");
-            aString = aString.Replace(",", " ");
-            aString = aString.Replace(".", " ");
-            aString = aString.Replace("-", " ");
-            aString = aString.Replace("!", "");
-            aString = aString.Replace("\"", " ");
-            aString = aString.Replace("#", " ");
-            aString = aString.Replace("¤", " ");
-            aString = aString.Replace("%", " ");
-            aString = aString.Replace("&", " ");
-            aString = aString.Replace("/", " ");
-            aString = aString.Replace("(", " ");
-            aString = aString.Replace(")", " ");
-            aString = aString.Replace("=", " ");
-            aString = aString.Replace("?", " ");
-            aString = aString.Replace("´", " ");
-            aString = aString.Replace("^", " ");
-            aString = aString.Replace("*", " ");
-            aString = aString.Replace(";", " ");
-            aString = aString.Replace(":", " ");
-            aString = aString.Replace("_", " ");
-            aString = aString.Replace("§", " ");
-            aString = aString.Replace("½", " ");
-            aString = aString.Replace("@", " ");
-            aString = aString.Replace("£", " ");
-            aString = aString.Replace("$", " ");
-            aString = aString.Replace("€", " ");
-            aString = aString.Replace("{", " ");
-            aString = aString.Replace("[", " ");
-            aString = aString.Replace("]", " ");
-            aString = aString.Replace("}", " ");
-            aString = aString.Replace("\\", " ");
-            aString = aString.Replace("~", " ");
+            string pattern = @"[+`¨',.\-!""#¤%&/()=?´^*;:_§½@£$€{\[\]}~\\]";
+            string replacement = " ";
 
-            return aString;
+            return Regex.Replace(aString, pattern, replacement);
         }
     }
 }
