@@ -113,7 +113,7 @@ namespace Motherboard
 
             Random rand = new Random();
 
-            //The bot has a tendency to lose it's current activity if it gets disconnected.
+            botClient.Heartbeated += StatusUpdate;
 
             sbyte toggle = -1;
             byte count = 0;
@@ -137,16 +137,51 @@ namespace Motherboard
 
             botClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
         }
+
+        /// <summary>
+        /// Updates the bots status to a random predetermined value. 
+        /// This is called on hearthbeat event, thus requiring heartbeat event arguments
+        /// </summary>
+        /// <param name="sender">Discord client of the bot</param>
+        /// <param name="e">Heartbeat event's arguments</param>
+        /// <returns></returns>
+        private static async Task StatusUpdate(DiscordClient sender, HeartbeatEventArgs e)
                 {
-                    ActivityType = ActivityType.Playing,
-                    Name = activityText
+            Random random = new Random();
+
+            string[] statuses =
+            {
+                "Vacuuming",
+                "Doing the dishes",
+                "Dusting off furniture",
+                "Preparing food",
+                "Cleaning the floor",
+                "Doing laundry",
+                "Drinking wine",
+                "Making sandwiches",
+                "Laughing at you",
+                "Recharging"
                 };
 
-                await client.UpdateStatusAsync(activity, UserStatus.Online, DateTimeOffset.Now);
+            string chosenStatus;
+
+            try
+            {
+                chosenStatus = statuses.ElementAt(random.Next(statuses.Length));
+            }
+            catch
+            {
+                botClient?.Logger.LogWarning("Failed to assigne status, defaulting");
+                chosenStatus = statuses.ElementAt(0);
+            }
+
+            DiscordActivity activity = new DiscordActivity()
+            {
+                ActivityType = ActivityType.Playing,
+                Name = chosenStatus
             };
 
-            //Prevents the task from ending
-            await Task.Delay(-1);
+            await sender.UpdateStatusAsync(activity, UserStatus.Online, DateTimeOffset.Now);
         }
 
         /// <summary>
