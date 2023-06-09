@@ -16,7 +16,10 @@ namespace Motherboard
     {
         static void Main()
         {
+            while (true)
+            {
             MainAsync().GetAwaiter().GetResult();
+        }
         }
 
         public static DiscordClient? botClient;
@@ -111,25 +114,29 @@ namespace Motherboard
             Random rand = new Random();
 
             //The bot has a tendency to lose it's current activity if it gets disconnected.
-            //For some reason with DSharpPlus it happens once in a while
-            //This is why we periodically (on every heartbeat) set it to something
-            botClient.Heartbeated += async (client, e) =>
-            {
-                DiscordActivity activity;
 
-                activityText = rand.Next(1, 8) switch
+            sbyte toggle = -1;
+            byte count = 0;
+
+            botClient.Zombied += async (sender, e) =>
+            {
+                if (count <= 4)
                 {
-                    1 => "Vacuuming",
-                    2 => "Doing the dishes",
-                    3 => "Dusting off furniture",
-                    4 => "Preparing food",
-                    5 => "Cleaning the floor",
-                    6 => "Doing laundry",
-                    7 => "Drinking wine",
-                    _ => "Recharging",
+                    count++;
+                    return;
+                }
+
+                await Task.Run(() =>
+                {
+                    toggle = 0;
+                });
                 };
 
-                activity = new DiscordActivity()
+            //Prevents the task from ending
+            await Task.Delay(toggle);
+
+            botClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
+        }
                 {
                     ActivityType = ActivityType.Playing,
                     Name = activityText
