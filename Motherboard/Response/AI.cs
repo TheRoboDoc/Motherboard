@@ -122,17 +122,19 @@ namespace Motherboard.Response
             {
                 if (string.IsNullOrEmpty(discordMessage.Content)) continue;
 
+                string username = SpecialCharacterRemoval(discordMessage.Author.Username);
+
                 if (discordMessage.Author == Program.botClient?.CurrentUser)
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
                 }                                               //Robit ID
                 else if (discordMessage.Author.Id.ToString() == "1049457745763500103")
                 {
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", username));
                 }
                 else if (!discordMessage.Author.IsBot)
                 {
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", username));
                 }
 
                 if (Program.DebugStatus())
