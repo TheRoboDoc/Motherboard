@@ -3,7 +3,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 using static Motherboard.FileManager;
 
 namespace Motherboard.Response
@@ -29,104 +28,25 @@ namespace Motherboard.Response
 
             DiscordChannel replyIn = messageArgs.Channel;
 
-            // We want to reply if the message was sent in a thread that bot is a member of
-            if (replyIn.Type == ChannelType.PublicThread || replyIn.Type == ChannelType.PrivateThread)
-            {
-                if (messageArgs.Author.IsBot)
-                {
-                    return;
-                }
-
-                DiscordThreadChannel threadChannel = (DiscordThreadChannel)replyIn;
-
-                // This is stupid but for some magic reasons it didn't work otherwise
-                IReadOnlyList<DiscordThreadChannelMember> romembers = await threadChannel.ListJoinedMembersAsync();
-
-                List<DiscordThreadChannelMember> members = new List<DiscordThreadChannelMember>();
-
-                foreach (DiscordThreadChannelMember member in romembers)
-                {
-                    members.Add(member);
-                }
-
-                // Suboptimal way to check if the bot is a memeber of the thread, but it works
-                bool hasBot = false;
-
-                foreach (DiscordThreadChannelMember member in members)
-                {
-                    if (member.Id == Program.botClient?.CurrentUser.Id)
-                    {
-                        hasBot = true;
-                        break;
-                    }
-                }
-
-                if (!hasBot)
-                {
-                    return;
-                }
-            }
-            else if (!await CheckBotMention(messageArgs))
+            if (!await CheckBotMention(messageArgs))
             {
                 return;
             }
 
-            if (replyIn.Type != ChannelType.PublicThread)
+            await replyIn.TriggerTypingAsync();
+
+            Tuple<bool, string> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
+
+            string response = AIGenerationResponse.Item2;
+
+            if (AIGenerationResponse.Item1)
             {
-                // We are checking if within 9 messages there were 3 occurances of user message and same for bot message, if so we create a new
-                // thread and reply in there.
-                IReadOnlyList<DiscordMessage> discordReadOnlyMessageList = messageArgs.Channel.GetMessagesAsync(9).Result;
-
-                List<DiscordMessage> discordMessagesFromUser = new List<DiscordMessage>();
-
-                foreach (DiscordMessage discordMessage in discordReadOnlyMessageList)
-                {
-                    if (discordMessage.Author == messageArgs.Author)
-                    {
-                        discordMessagesFromUser.Add(discordMessage);
-                    }
-                }
-
-                List<DiscordMessage> discordMessagesFromBot = new List<DiscordMessage>();
-
-                foreach (DiscordMessage discordMessage in discordReadOnlyMessageList)
-                {
-                    if (discordMessage.Author == messageArgs.Guild.CurrentMember)
-                    {
-                        discordMessagesFromBot.Add(discordMessage);
-                    }
-                }
-
-                if (discordMessagesFromUser.Count > 3 && discordMessagesFromBot.Count > 3)
-                {
-                    // Remove the mention string
-                    string name = Regex.Replace(messageArgs.Message.Content, "<@!?(\\d+)>", "");
-
-                    // Create the thread
-                    DiscordThreadChannel thread = await messageArgs.Channel.CreateThreadAsync(messageArgs.Message, name, AutoArchiveDuration.Day,
-                                $"{messageArgs.Author.Mention} interacted multiple times in a row with the bot");
-
-                    replyIn = thread;
-                }
+                await replyIn.SendMessageAsync(response);
             }
-
-            _ = Task.Run(async () =>
+            else
             {
-                Task typing = replyIn.TriggerTypingAsync();
-
-                Tuple<bool, string> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
-
-                string response = AIGenerationResponse.Item2;
-
-                if (AIGenerationResponse.Item1)
-                {
-                    await replyIn.SendMessageAsync(response);
-                }
-                else
-                {
-                    await replyIn.SendMessageAsync("**System:** " + response);
-                }
-            });
+                await replyIn.SendMessageAsync("**System:** " + response);
+            }
         }
 
         /// <summary>
