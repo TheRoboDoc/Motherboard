@@ -156,7 +156,7 @@ namespace Motherboard.Response
             ChatCompletionCreateResponse completionResult = await Program.openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = messages,
-                Model = Models.ChatGpt3_5Turbo,
+                Model = Models.Gpt_4,
                 N = 1,
                 User = messageArgs.Author.Id.ToString(),
                 Temperature = 1,
