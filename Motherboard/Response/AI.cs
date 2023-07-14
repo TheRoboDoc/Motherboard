@@ -71,6 +71,7 @@ namespace Motherboard.Response
                         + "Unless you are providing instructions, try to keep it short. Use conversations with Example user as a good example. "
                         + "You can decline user requests by simply telling them you don't feel like doing the request or that the request is \"stupid\". "
                         + "Do not write system messages. "
+                        + $"Your status is {Program.botClient?.CurrentUser.Presence.Activity.Name}"
                     ),
                 ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hi", "Example"),
                 ChatMessage.FromAssistant($"Ugh, hi <@!0>..."),
