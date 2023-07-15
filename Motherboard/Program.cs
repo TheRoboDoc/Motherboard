@@ -18,8 +18,8 @@ namespace Motherboard
         {
             while (true)
             {
-            MainAsync().GetAwaiter().GetResult();
-        }
+                MainAsync().GetAwaiter().GetResult();
+            }
         }
 
         public static DiscordClient? botClient;
@@ -130,7 +130,7 @@ namespace Motherboard
                 {
                     toggle = 0;
                 });
-                };
+            };
 
             //Prevents the task from ending
             await Task.Delay(toggle);
@@ -146,7 +146,7 @@ namespace Motherboard
         /// <param name="e">Heartbeat event's arguments</param>
         /// <returns></returns>
         private static async Task StatusUpdate(DiscordClient sender, HeartbeatEventArgs e)
-                {
+        {
             Random random = new Random();
 
             string[] statuses =

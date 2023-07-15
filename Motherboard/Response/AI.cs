@@ -71,6 +71,7 @@ namespace Motherboard.Response
                         + "Unless you are providing instructions, try to keep it short. Use conversations with Example user as a good example. "
                         + "You can decline user requests by simply telling them you don't feel like doing the request or that the request is \"stupid\". "
                         + "Do not write system messages. "
+                        + $"Your status is {Program.botClient?.CurrentUser.Presence.Activity.Name}"
                     ),
                 ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hi", "Example"),
                 ChatMessage.FromAssistant($"Ugh, hi <@!0>..."),
@@ -121,17 +122,19 @@ namespace Motherboard.Response
             {
                 if (string.IsNullOrEmpty(discordMessage.Content)) continue;
 
+                string username = SpecialCharacterRemoval(discordMessage.Author.Username);
+
                 if (discordMessage.Author == Program.botClient?.CurrentUser)
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
                 }                                               //Robit ID
                 else if (discordMessage.Author.Id.ToString() == "1049457745763500103")
                 {
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", username));
                 }
                 else if (!discordMessage.Author.IsBot)
                 {
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", username));
                 }
 
                 if (Program.DebugStatus())
@@ -153,7 +156,7 @@ namespace Motherboard.Response
             ChatCompletionCreateResponse completionResult = await Program.openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = messages,
-                Model = Models.ChatGpt3_5Turbo,
+                Model = Models.Gpt_4,
                 N = 1,
                 User = messageArgs.Author.Id.ToString(),
                 Temperature = 1,
