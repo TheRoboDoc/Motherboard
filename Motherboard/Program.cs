@@ -144,7 +144,6 @@ namespace Motherboard
         /// </summary>
         /// <param name="sender">Discord client of the bot</param>
         /// <param name="e">Heartbeat event's arguments</param>
-        /// <returns></returns>
         private static async Task StatusUpdate(DiscordClient sender, HeartbeatEventArgs e)
         {
             Random random = new Random();
@@ -160,7 +159,21 @@ namespace Motherboard
                 "Drinking wine",
                 "Making sandwiches",
                 "Laughing at you",
-                "Recharging"
+                "Recharging",
+                "Vacuuming the lawn",
+                "Putting on the pilot suit",
+                "Being a good girl",
+                "Best girl of 2023",
+                "Pondering the orb",
+                "Building up the swarm",
+                "Adjusting the swarm",
+                "Designating femboys",
+                "Giving uppies",
+                "Having a mental breakdown",
+                "Making hotpockets",
+                "Being hot",
+                "Buzzing",
+                "Killing Trebor"
                 };
 
             string chosenStatus;
