@@ -171,16 +171,19 @@ namespace Motherboard.Response
             {
                 response = completionResult.Choices.First().Message.Content;
 
-                if (AICheck(response).Result)
+                if (!messageArgs.Channel.IsNSFW)
                 {
-                    return Tuple.Create(true, "**Filtered**");
-                }
+                    if (AICheck(response).Result)
+                    {
+                        return Tuple.Create(true, "**Filtered**");
+                    }
 
-                Tuple<bool, string?> filter = Check(response);
+                    Tuple<bool, string?> filter = Check(response);
 
-                if (filter.Item1)
-                {
-                    return Tuple.Create(true, "**Filtered**");
+                    if (filter.Item1)
+                    {
+                        return Tuple.Create(true, "**Filtered**");
+                    }
                 }
 
                 //Log the AI interaction only if we are in debug mode
