@@ -116,27 +116,8 @@ namespace Motherboard
 
             BotClient.Heartbeated += StatusUpdate;
 
-            sbyte toggle = -1;
-            byte count = 0;
-
-            BotClient.Zombied += async (sender, e) =>
-            {
-                if (count <= 4)
-                {
-                    count++;
-                    return;
-                }
-
-                await Task.Run(() =>
-                {
-                    toggle = 0;
-                });
-            };
-
             //Prevents the task from ending
-            await Task.Delay(toggle);
-
-            BotClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
+            await Task.Delay(-1);
         }
 
         /// <summary>
