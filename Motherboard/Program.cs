@@ -112,13 +112,13 @@ namespace Motherboard
 
             BotClient.MessageCreated += Handler.Run;
 
-            Random rand = new Random();
-
             BotClient.Heartbeated += StatusUpdate;
 
             //Prevents the task from ending
             await Task.Delay(-1);
         }
+
+        public static string? ChosenStatus;
 
         /// <summary>
         /// Updates the bots status to a random predetermined value. 
@@ -158,25 +158,19 @@ namespace Motherboard
                 "Killing Trebor"
                 };
 
-            string chosenStatus;
-
             try
             {
-                chosenStatus = statuses.ElementAt(random.Next(statuses.Length));
+                ChosenStatus = statuses.ElementAt(random.Next(statuses.Length));
             }
             catch
             {
                 BotClient?.Logger.LogWarning("Failed to assigne status, defaulting");
-                chosenStatus = statuses.ElementAt(0);
+                ChosenStatus = statuses.ElementAt(0);
             }
 
-            DiscordActivity activity = new DiscordActivity()
-            {
-                ActivityType = ActivityType.Playing,
-                Name = chosenStatus
-            };
+            DiscordActivity activity = new DiscordActivity(ChosenStatus, ActivityType.Custom);
 
-            await sender.UpdateStatusAsync(activity, UserStatus.Online, DateTimeOffset.Now);
+            await sender.UpdateStatusAsync(activity);
         }
 
         /// <summary>
