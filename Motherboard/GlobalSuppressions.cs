@@ -10,4 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "Will break if applied", Scope = "member", Target = "~F:Motherboard.Program.BotClient")]
 [assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "Will break if applied", Scope = "member", Target = "~F:Motherboard.Program.OpenAiService")]
 [assembly: SuppressMessage("Style", "IDE0057:Use range operator", Justification = "No", Scope = "member", Target = "~M:Motherboard.Program.MainAsync~System.Threading.Tasks.Task")]
-[assembly: SuppressMessage("Style", "IDE0057:Use range operator", Justification = "No", Scope = "member", Target = "~M:Motherboard.Command.SlashCommands.Commands(DSharpPlus.SlashCommands.InteractionContext)~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "Breaks AI status check", Scope = "member", Target = "~F:Motherboard.Program.ChosenStatus")]
