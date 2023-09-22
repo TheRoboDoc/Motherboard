@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,9 +24,9 @@ namespace Motherboard
             }
         }
 
-        public static DiscordClient? botClient;
+        public static DiscordClient? BotClient;
 
-        public static OpenAIService? openAiService;
+        public static OpenAIService? OpenAiService;
 
         /// <summary>
         /// Main Thread
@@ -32,7 +34,7 @@ namespace Motherboard
         /// <returns>Nothing</returns>
         static async Task MainAsync()
         {
-            openAiService = new OpenAIService(new OpenAiOptions()
+            OpenAiService = new OpenAIService(new OpenAiOptions()
             {
                 ApiKey = Tokens.OpenAIToken
             });
@@ -63,12 +65,15 @@ namespace Motherboard
                 DiscordIntents.GuildMessages,
 
                 MinimumLogLevel = logLevel,
+                LogUnknownEvents = DebugStatus(),
 
                 LogTimestampFormat = "dd.MM.yyyy HH:mm:ss (zzz)",
             };
 
-            botClient = new DiscordClient(config);
+            BotClient = new DiscordClient(config);
             #endregion
+
+            BotClient.UseInteractivity(new InteractivityConfiguration());
 
             //Probably redundant
             ServiceProvider services = new ServiceCollection()
@@ -80,7 +85,7 @@ namespace Motherboard
                 Services = services
             };
 
-            SlashCommandsExtension slashCommands = botClient.UseSlashCommands();
+            SlashCommandsExtension slashCommands = BotClient.UseSlashCommands();
 
             slashCommands.RegisterCommands<SlashCommands>();
             #endregion
@@ -98,45 +103,26 @@ namespace Motherboard
                     message += $"\t\t\t\t\t\t\t{dirMissingText}\n";
                 }
 
-                botClient.Logger.LogWarning("{message}", message);
+                BotClient.Logger.LogWarning("{message}", message);
             }
 
-            botClient.Ready += BotClient_Ready;
+            BotClient.SessionCreated += BotClient_Ready;
 
             //Connecting the discord client
-            await botClient.ConnectAsync();
+            await BotClient.ConnectAsync();
 
-            botClient.Logger.LogInformation("Connected");
-            botClient.Logger.LogInformation("Bot is now operational");
+            BotClient.Logger.LogInformation("Connected");
+            BotClient.Logger.LogInformation("Bot is now operational");
 
-            botClient.MessageCreated += Handler.Run;
+            BotClient.MessageCreated += Handler.Run;
 
-            Random rand = new Random();
-
-            botClient.Heartbeated += StatusUpdate;
-
-            sbyte toggle = -1;
-            byte count = 0;
-
-            botClient.Zombied += async (sender, e) =>
-            {
-                if (count <= 4)
-                {
-                    count++;
-                    return;
-                }
-
-                await Task.Run(() =>
-                {
-                    toggle = 0;
-                });
-            };
+            BotClient.Heartbeated += StatusUpdate;
 
             //Prevents the task from ending
-            await Task.Delay(toggle);
-
-            botClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
+            await Task.Delay(-1);
         }
+
+        public static string? ChosenStatus;
 
         /// <summary>
         /// Updates the bots status to a random predetermined value. 
@@ -176,25 +162,19 @@ namespace Motherboard
                 "Killing Trebor"
                 };
 
-            string chosenStatus;
-
             try
             {
-                chosenStatus = statuses.ElementAt(random.Next(statuses.Length));
+                ChosenStatus = statuses.ElementAt(random.Next(statuses.Length));
             }
             catch
             {
-                botClient?.Logger.LogWarning("Failed to assigne status, defaulting");
-                chosenStatus = statuses.ElementAt(0);
+                BotClient?.Logger.LogWarning("Failed to assigne status, defaulting");
+                ChosenStatus = statuses.ElementAt(0);
             }
 
-            DiscordActivity activity = new DiscordActivity()
-            {
-                ActivityType = ActivityType.Playing,
-                Name = chosenStatus
-            };
+            DiscordActivity activity = new DiscordActivity(ChosenStatus, ActivityType.Custom);
 
-            await sender.UpdateStatusAsync(activity, UserStatus.Online, DateTimeOffset.Now);
+            await sender.UpdateStatusAsync(activity);
         }
 
         /// <summary>
@@ -228,9 +208,9 @@ namespace Motherboard
         /// <param name="sender">Client that triggered this task</param>
         /// <param name="e">Ready event arguments arguments</param>
         /// <returns>The completed task</returns>
-        private static Task BotClient_Ready(DiscordClient sender, ReadyEventArgs e)
+        private static Task BotClient_Ready(DiscordClient sender, SessionReadyEventArgs e)
         {
-            botClient?.Logger.LogInformation("Client is ready");
+            BotClient?.Logger.LogInformation("Client is ready");
 
             return Task.CompletedTask;
         }

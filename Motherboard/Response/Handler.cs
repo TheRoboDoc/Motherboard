@@ -9,6 +9,8 @@ namespace Motherboard.Response
 {
     public static class Handler
     {
+        public static readonly EventId HandlerEvent = new EventId(301, "Handler");
+
         /// <summary>
         /// Runs the response handler that determines to respond or not and how
         /// </summary>
@@ -16,8 +18,8 @@ namespace Motherboard.Response
         /// <param name="messageArgs">Discord message creation arguments</param>
         /// <returns>Completed task</returns>
         public static async Task Run(DiscordClient sender, MessageCreateEventArgs messageArgs)
-        {                                                                        //Robit ID
-            if (messageArgs.Author.IsBot && messageArgs?.Author.Id.ToString() != "1049457745763500103") return;
+        {                                                                     //Motherboard ID
+            if (messageArgs.Author.IsBot && messageArgs?.Author.Id.ToString() != "1103797730276548660") return;
 
             if (await DiscordNoobFailsafe(messageArgs)) return;
 
@@ -26,6 +28,15 @@ namespace Motherboard.Response
 
             if (channelSettings.AIIgnore) return;
 
+            await AIRespond(messageArgs);
+        }
+
+        /// <summary>
+        /// Responses with AI answer to the message
+        /// </summary>
+        /// <param name="messageArgs">Discord message creation arguments</param>
+        private static async Task AIRespond(MessageCreateEventArgs messageArgs)
+        {
             DiscordChannel replyIn = messageArgs.Channel;
 
             if (!await CheckBotMention(messageArgs))
@@ -61,7 +72,7 @@ namespace Motherboard.Response
         /// <item>False: Failsafe not triggered</item>
         /// </list>
         /// </returns>
-        private static async Task<bool> DiscordNoobFailsafe(MessageCreateEventArgs messageArgs)
+        private static async Task<bool> DiscordNoobFailsafe(MessageCreateEventArgs messageArgs) //This is redundant as you need to fuck up pretty bad
         {
             if (messageArgs.Author.IsBot || messageArgs.Equals(null)) return false;
 
@@ -73,15 +84,23 @@ namespace Motherboard.Response
             {
                 if (Program.DebugStatus())
                 {
-                    Program.botClient?.Logger.LogInformation("The message was empty");
+                    Program.BotClient?.Logger.LogInformation(HandlerEvent, "The message was empty");
                 }
             }
 
-            SlashCommandsExtension slashCommandsExtension = Program.botClient.GetSlashCommands();
+            //Fetching every slash command the bot has
+            SlashCommandsExtension? slashCommandsExtension = Program.BotClient?.GetSlashCommands();
 
-            var slashCommandsList = slashCommandsExtension.RegisteredCommands;
-            List<DiscordApplicationCommand> globalCommands =
-                slashCommandsList.Where(x => x.Key == null).SelectMany(x => x.Value).ToList();
+            var slashCommandsList = slashCommandsExtension?.RegisteredCommands;
+            List<DiscordApplicationCommand>? globalCommands =
+                slashCommandsList?.Where(x => x.Key == null).SelectMany(x => x.Value).ToList(); //This is stupid, can't find a better way as of yet
+
+            if (globalCommands == null)
+            {
+                Program.BotClient?.Logger.LogWarning(HandlerEvent, "Failed to fetch commands");
+
+                return false;
+            }
 
             List<string> commands = new List<string>();
 
@@ -105,19 +124,25 @@ namespace Motherboard.Response
                         $"That doesn't look very nice for you. So I took the liberty to delete it");
 
                     triggered = true;
+
+                    // Deletes message
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(10000);
+
+                        try
+                        {
+                            await message.DeleteAsync();
+                        }
+                        catch
+                        {
+                            Program.BotClient?.Logger.LogWarning(HandlerEvent, "Couldn't delete message {messageID}", message?.Id);
+                        }
+                    });
+
                     break;
                 }
             }
-
-            // Delets message
-            _ = Task.Run(async () =>
-            {
-                if (message != null)
-                {
-                    await Task.Delay(10000);
-                    await message.DeleteAsync();
-                }
-            });
 
             return triggered;
         }
@@ -138,17 +163,20 @@ namespace Motherboard.Response
 
             await Task.Run(() =>
             {
-                foreach (DiscordUser mentionedUser in messageArgs.MentionedUsers)
+                foreach (DiscordUser? mentionedUser in messageArgs.MentionedUsers)
                 {
-                    if (mentionedUser == Program.botClient?.CurrentUser)
+#pragma warning disable CS8604 // Possible null reference argument.
+                    if (mentionedUser == Program.BotClient?.CurrentUser)
                     {
                         botMentioned = true;
                         break;
                     }
+#pragma warning restore CS8604 // Possible null reference argument.
                 }
             });
 
             return botMentioned;
+
         }
     }
 }
