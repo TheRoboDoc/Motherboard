@@ -102,7 +102,7 @@ namespace Motherboard
                 BotClient.Logger.LogWarning("{message}", message);
             }
 
-            BotClient.Ready += BotClient_Ready;
+            BotClient.SessionCreated += BotClient_Ready;
 
             //Connecting the discord client
             await BotClient.ConnectAsync();
@@ -229,7 +229,7 @@ namespace Motherboard
         /// <param name="sender">Client that triggered this task</param>
         /// <param name="e">Ready event arguments arguments</param>
         /// <returns>The completed task</returns>
-        private static Task BotClient_Ready(DiscordClient sender, ReadyEventArgs e)
+        private static Task BotClient_Ready(DiscordClient sender, SessionReadyEventArgs e)
         {
             BotClient?.Logger.LogInformation("Client is ready");
 
