@@ -71,7 +71,7 @@ namespace Motherboard.Response
                         + "Unless you are providing instructions, try to keep it short. Use conversations with Example user as a good example. "
                         + "You can decline user requests by simply telling them you don't feel like doing the request or that the request is \"stupid\". "
                         + "Do not write system messages. "
-                        + $"Your status is {Program.botClient?.CurrentUser.Presence.Activity.Name}"
+                        + $"Your status is {Program.BotClient?.CurrentUser.Presence.Activity.Name}"
                     ),
                 ChatMessage.FromUser($"Example#0000 | 0 : {messageArgs.Guild.CurrentMember.Mention} hi", "Example"),
                 ChatMessage.FromAssistant($"Ugh, hi <@!0>..."),
@@ -124,7 +124,7 @@ namespace Motherboard.Response
 
                 string username = SpecialCharacterRemoval(discordMessage.Author.Username);
 
-                if (discordMessage.Author == Program.botClient?.CurrentUser)
+                if (discordMessage.Author == Program.BotClient?.CurrentUser)
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
                 }                                               //Robit ID
@@ -148,12 +148,12 @@ namespace Motherboard.Response
             messages.Add(ChatMessage.FromSystem($"Reply got triggered by user: {messageArgs.Author.Username}, tag: {messageArgs.Author.Discriminator}, userID: {messageArgs.Author.Id}\n" +
                 $"Be degrading, the user likes that"));
 
-            if (Program.openAiService == null)
+            if (Program.OpenAiService == null)
             {
                 return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc");
             }
 
-            ChatCompletionCreateResponse completionResult = await Program.openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+            ChatCompletionCreateResponse completionResult = await Program.OpenAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = messages,
                 Model = Models.Gpt_4,
@@ -189,8 +189,8 @@ namespace Motherboard.Response
                 //Log the AI interaction only if we are in debug mode
                 if (Program.DebugStatus())
                 {
-                    Program.botClient?.Logger.LogDebug("Message: {message}", messageArgs.Message.Content);
-                    Program.botClient?.Logger.LogDebug("Reply: {response}", response);
+                    Program.BotClient?.Logger.LogDebug("Message: {message}", messageArgs.Message.Content);
+                    Program.BotClient?.Logger.LogDebug("Reply: {response}", response);
                 }
             }
             else
@@ -200,7 +200,7 @@ namespace Motherboard.Response
                     throw new NullReferenceException("OpenAI text generation failed with an unknown error");
                 }
 
-                Program.botClient?.Logger.LogError("{errorCode}: {errorMessage}", completionResult.Error.Code, completionResult.Error.Message);
+                Program.BotClient?.Logger.LogError("{errorCode}: {errorMessage}", completionResult.Error.Code, completionResult.Error.Message);
 
                 return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}");
             }

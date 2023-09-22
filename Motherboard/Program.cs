@@ -22,9 +22,9 @@ namespace Motherboard
             }
         }
 
-        public static DiscordClient? botClient;
+        public static DiscordClient? BotClient;
 
-        public static OpenAIService? openAiService;
+        public static OpenAIService? OpenAiService;
 
         /// <summary>
         /// Main Thread
@@ -32,7 +32,7 @@ namespace Motherboard
         /// <returns>Nothing</returns>
         static async Task MainAsync()
         {
-            openAiService = new OpenAIService(new OpenAiOptions()
+            OpenAiService = new OpenAIService(new OpenAiOptions()
             {
                 ApiKey = Tokens.OpenAIToken
             });
@@ -67,7 +67,7 @@ namespace Motherboard
                 LogTimestampFormat = "dd.MM.yyyy HH:mm:ss (zzz)",
             };
 
-            botClient = new DiscordClient(config);
+            BotClient = new DiscordClient(config);
             #endregion
 
             //Probably redundant
@@ -80,7 +80,7 @@ namespace Motherboard
                 Services = services
             };
 
-            SlashCommandsExtension slashCommands = botClient.UseSlashCommands();
+            SlashCommandsExtension slashCommands = BotClient.UseSlashCommands();
 
             slashCommands.RegisterCommands<SlashCommands>();
             #endregion
@@ -98,27 +98,27 @@ namespace Motherboard
                     message += $"\t\t\t\t\t\t\t{dirMissingText}\n";
                 }
 
-                botClient.Logger.LogWarning("{message}", message);
+                BotClient.Logger.LogWarning("{message}", message);
             }
 
-            botClient.Ready += BotClient_Ready;
+            BotClient.Ready += BotClient_Ready;
 
             //Connecting the discord client
-            await botClient.ConnectAsync();
+            await BotClient.ConnectAsync();
 
-            botClient.Logger.LogInformation("Connected");
-            botClient.Logger.LogInformation("Bot is now operational");
+            BotClient.Logger.LogInformation("Connected");
+            BotClient.Logger.LogInformation("Bot is now operational");
 
-            botClient.MessageCreated += Handler.Run;
+            BotClient.MessageCreated += Handler.Run;
 
             Random rand = new Random();
 
-            botClient.Heartbeated += StatusUpdate;
+            BotClient.Heartbeated += StatusUpdate;
 
             sbyte toggle = -1;
             byte count = 0;
 
-            botClient.Zombied += async (sender, e) =>
+            BotClient.Zombied += async (sender, e) =>
             {
                 if (count <= 4)
                 {
@@ -135,7 +135,7 @@ namespace Motherboard
             //Prevents the task from ending
             await Task.Delay(toggle);
 
-            botClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
+            BotClient.Logger.LogWarning("RESTARTING DUE TO ZOMBIENG");
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace Motherboard
             }
             catch
             {
-                botClient?.Logger.LogWarning("Failed to assigne status, defaulting");
+                BotClient?.Logger.LogWarning("Failed to assigne status, defaulting");
                 chosenStatus = statuses.ElementAt(0);
             }
 
@@ -230,7 +230,7 @@ namespace Motherboard
         /// <returns>The completed task</returns>
         private static Task BotClient_Ready(DiscordClient sender, ReadyEventArgs e)
         {
-            botClient?.Logger.LogInformation("Client is ready");
+            BotClient?.Logger.LogInformation("Client is ready");
 
             return Task.CompletedTask;
         }

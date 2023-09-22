@@ -73,11 +73,11 @@ namespace Motherboard.Response
             {
                 if (Program.DebugStatus())
                 {
-                    Program.botClient?.Logger.LogInformation("The message was empty");
+                    Program.BotClient?.Logger.LogInformation("The message was empty");
                 }
             }
 
-            SlashCommandsExtension slashCommandsExtension = Program.botClient.GetSlashCommands();
+            SlashCommandsExtension slashCommandsExtension = Program.BotClient.GetSlashCommands();
 
             var slashCommandsList = slashCommandsExtension.RegisteredCommands;
             List<DiscordApplicationCommand> globalCommands =
@@ -140,7 +140,7 @@ namespace Motherboard.Response
             {
                 foreach (DiscordUser mentionedUser in messageArgs.MentionedUsers)
                 {
-                    if (mentionedUser == Program.botClient?.CurrentUser)
+                    if (mentionedUser == Program.BotClient?.CurrentUser)
                     {
                         botMentioned = true;
                         break;

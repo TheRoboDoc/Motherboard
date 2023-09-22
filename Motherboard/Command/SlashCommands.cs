@@ -41,7 +41,7 @@ namespace Motherboard.Command
         [SlashCommand("Commands", "Lists all commands for the bot")]
         public static async Task Commands(InteractionContext ctx)
         {
-            SlashCommandsExtension slashCommandsExtension = Program.botClient.GetSlashCommands();
+            SlashCommandsExtension slashCommandsExtension = Program.BotClient.GetSlashCommands();
 
             List<KeyValuePair<ulong?, IReadOnlyList<DiscordApplicationCommand>>> slashCommandKeyValuePairs = slashCommandsExtension.RegisteredCommands.ToList();
 
