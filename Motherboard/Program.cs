@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -70,6 +72,8 @@ namespace Motherboard
 
             BotClient = new DiscordClient(config);
             #endregion
+
+            BotClient.UseInteractivity(new InteractivityConfiguration());
 
             //Probably redundant
             ServiceProvider services = new ServiceCollection()

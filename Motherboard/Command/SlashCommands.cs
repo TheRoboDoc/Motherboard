@@ -1,6 +1,9 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using static Motherboard.FileManager;
 
@@ -39,33 +42,67 @@ namespace Motherboard.Command
 
         #region Help
         [SlashCommand("Commands", "Lists all commands for the bot")]
-        public static async Task Commands(InteractionContext ctx)
+        [SlashCommandPermissions(Permissions.SendMessages)]
+        public static async Task Commands(InteractionContext ctx,
+
+        [Option("Visible", "Is the ping visible to others")]
+        [DefaultValue(false)]
+        bool visible = false)
         {
-            SlashCommandsExtension slashCommandsExtension = Program.BotClient.GetSlashCommands();
+            SlashCommandsExtension? slashCommandsExtension = Program.BotClient?.GetSlashCommands();
 
-            List<KeyValuePair<ulong?, IReadOnlyList<DiscordApplicationCommand>>> slashCommandKeyValuePairs = slashCommandsExtension.RegisteredCommands.ToList();
+            List<KeyValuePair<ulong?, IReadOnlyList<DiscordApplicationCommand>>>? slashCommandKeyValuePairs = slashCommandsExtension?.RegisteredCommands.ToList();
 
-            IReadOnlyList<DiscordApplicationCommand> slashCommands = slashCommandKeyValuePairs.FirstOrDefault().Value;
+            IReadOnlyList<DiscordApplicationCommand>? slashCommands = slashCommandKeyValuePairs?.FirstOrDefault().Value;
 
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+            List<Page> pages = new List<Page>();
+
+            int entriesPerPage = 5;
+            int pageIndex = 0;
+
+            if (slashCommands == null)
             {
-                Title = "List of commands",
-                Color = DiscordColor.Purple,
-                Timestamp = DateTimeOffset.Now
-            };
+                Program.BotClient?.Logger.LogWarning("Failed to fetch list of commands");
 
-            foreach (DiscordApplicationCommand slashCommand in slashCommands)
-            {
-                string nameRaw = slashCommand.Name;
-                string descriptionRaw = slashCommand.Description;
+                await ctx.CreateResponseAsync("Failed to fetech list of commands");
 
-                string name = char.ToUpper(nameRaw[0]) + nameRaw.Substring(1);
-                string description = char.ToUpper(descriptionRaw[0]) + descriptionRaw.Substring(1);
-
-                embed.AddField(name, description);
+                return;
             }
 
-            await ctx.CreateResponseAsync(embed, true);
+            while (pageIndex < slashCommands.Count)
+            {
+                List<DiscordApplicationCommand> pageEntries = slashCommands
+                    .Skip(pageIndex)
+                    .Take(entriesPerPage)
+                    .ToList();
+
+                DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                {
+                    Title = "List of commands",
+                    Color = DiscordColor.Purple,
+                };
+
+                foreach (DiscordApplicationCommand slashCommand in pageEntries)
+                {
+                    string nameRaw = slashCommand.Name;
+                    string descriptionRaw = slashCommand.Description;
+
+                    string name = char.ToUpper(nameRaw[0]) + nameRaw[1..];
+                    string description = char.ToUpper(descriptionRaw[0]) + descriptionRaw[1..];
+
+                    embed.AddField(name, description);
+
+                    embed.WithFooter($"{pageIndex / entriesPerPage + 1}/{(slashCommands.Count + entriesPerPage - 1) / entriesPerPage}");
+                }
+
+                pages.Add(new Page { Embed = embed });
+
+                pageIndex += entriesPerPage;
+            }
+
+            InteractivityExtension? interactivity = ctx.Client.GetInteractivity();
+
+            await interactivity.SendPaginatedResponseAsync(ctx.Interaction, !visible, ctx.Member, pages);
         }
         #endregion
 
