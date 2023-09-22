@@ -63,6 +63,7 @@ namespace Motherboard
                 DiscordIntents.GuildMessages,
 
                 MinimumLogLevel = logLevel,
+                LogUnknownEvents = DebugStatus(),
 
                 LogTimestampFormat = "dd.MM.yyyy HH:mm:ss (zzz)",
             };
