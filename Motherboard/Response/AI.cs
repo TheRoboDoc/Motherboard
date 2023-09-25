@@ -390,9 +390,9 @@ namespace Motherboard.Response
 
                 if (messageArgs.Channel.IsNSFW)
                 {
-                FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
+                    FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
 
-                image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
+                    image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
                 }
 
                 if (image == null)
