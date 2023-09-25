@@ -20,12 +20,14 @@ namespace Motherboard.WordFilter
         /// <item><c>False</c>: Content moderation not triggered</item>
         /// </list>
         /// </returns>
-        public static async Task<bool> AICheck(string sentence)
+        public static async Task<bool> AICheck(string? sentence)
         {
             if (Program.OpenAiService == null)
             {
                 return false;
             }
+
+            if (sentence == null) { return false; }
 
             CreateModerationResponse response = await Program.OpenAiService.CreateModeration(new CreateModerationRequest()
             {
