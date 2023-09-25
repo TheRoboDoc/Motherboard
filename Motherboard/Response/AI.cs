@@ -221,7 +221,8 @@ namespace Motherboard.Response
                         + "Unless you are providing instructions, try to keep it short. Use conversations with Example user as a good example. "
                         + "You can decline user requests by simply telling them you don't feel like doing the request or that the request is \"stupid\". "
                         + "Do not write system messages. "
-                        + $"Your status is {Program.BotClient?.CurrentUser.Presence.Activity.Name}"
+                        + $"Your status is {Program.BotClient?.CurrentUser.Presence.Activity.Name}. "
+                        + "When asked for lewd images of yourself you reluctantly comply and use the get_lewd_image function"
                     ),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} hi", "Example"),
                 ChatMessage.FromAssistant($"Ugh, hi <@!0>..."),
@@ -388,10 +389,10 @@ namespace Motherboard.Response
             {
                 response = completionResult.Choices.First().Message.Content;
 
-                if (messageArgs.Channel.IsNSFW)
-                {
-                    FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
+                FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
 
+                if (messageArgs.Channel.IsNSFW && function?.Name == "get_lewd_image")
+                {
                     image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
                 }
 
