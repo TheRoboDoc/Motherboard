@@ -2,9 +2,14 @@
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using OpenAI.Builders;
 using OpenAI.ObjectModels;
 using OpenAI.ObjectModels.RequestModels;
 using OpenAI.ObjectModels.ResponseModels;
+using OpenAI.ObjectModels.SharedModels;
+using System.Text;
+using System.Text.RegularExpressions;
 using static Motherboard.WordFilter.WordFilter;
 
 namespace Motherboard.Response
@@ -280,12 +285,14 @@ namespace Motherboard.Response
         /// </list>
         /// </returns>
         /// <exception cref="NullReferenceException">OpenAI text generation failed with an unknown error</exception>
-        public static async Task<Tuple<bool, string>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
+        public static async Task<Tuple<bool, string, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
         {
             //Getting bot user info
             string displayName = messageArgs.Guild.CurrentMember.DisplayName;
             string discriminator = messageArgs.Guild.CurrentMember.Discriminator;
             string userID = messageArgs.Guild.CurrentMember.Id.ToString();
+
+            MemoryStream? image = null;
 
             //Setting up initial bot setup
             List<ChatMessage> messages = GetSetUpMessages(displayName, discriminator, userID, messageArgs).ToList();
@@ -358,7 +365,7 @@ namespace Motherboard.Response
             {
                 Program.BotClient?.Logger.LogError(AIEvent, "OpenAI service isn't on");
 
-                return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc");
+                return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc", image);
             }
 
             //Sending OpenAI API request for chat reply
@@ -370,7 +377,8 @@ namespace Motherboard.Response
                 User = messageArgs.Author.Id.ToString(),
                 Temperature = 1,
                 FrequencyPenalty = 1.1F,
-                PresencePenalty = 1
+                PresencePenalty = 1,
+                Functions = Functions.GetFunctions()
             });
 
             string response;
@@ -380,18 +388,32 @@ namespace Motherboard.Response
             {
                 response = completionResult.Choices.First().Message.Content;
 
+                FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
+
+                image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
+
+                if (image == null)
+                {
+                    Program.BotClient?.Logger.LogWarning("Image is null");
+                }
+
+                if (string.IsNullOrEmpty(response))
+                {
+                    return Tuple.Create(false, "No message content", image);
+                }
+
                 if (!messageArgs.Channel.IsNSFW)
                 {
                     if (AICheck(response).Result)
                     {
-                        return Tuple.Create(true, "**Filtered**");
+                        return Tuple.Create(true, "**Filtered**", image);
                     }
 
                     Tuple<bool, string?> filter = Check(response);
 
                     if (filter.Item1)
                     {
-                        return Tuple.Create(true, "**Filtered**");
+                        return Tuple.Create(true, "**Filtered**", image);
                     }
                 }
 
@@ -411,10 +433,10 @@ namespace Motherboard.Response
 
                 Program.BotClient?.Logger.LogError(AIEvent, "{ErrorCode}: {ErrorMessage}", completionResult.Error.Code, completionResult.Error.Message);
 
-                return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}");
+                return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}", image);
             }
 
-            return Tuple.Create(true, response);
+            return Tuple.Create(true, response, image);
         }
     }
 }

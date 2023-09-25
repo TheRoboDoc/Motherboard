@@ -46,13 +46,27 @@ namespace Motherboard.Response
 
             await replyIn.TriggerTypingAsync();
 
-            Tuple<bool, string> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
+            Tuple<bool, string, MemoryStream?> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
 
             string response = AIGenerationResponse.Item2;
 
             if (AIGenerationResponse.Item1)
             {
-                await replyIn.SendMessageAsync(response);
+                DiscordMessageBuilder builder = new DiscordMessageBuilder();
+
+                builder.WithContent(response);
+
+                if (messageArgs.Channel.IsNSFW)
+                {
+                    MemoryStream? memoryStream = AIGenerationResponse.Item3;
+
+                    if (AIGenerationResponse.Item3 != null)
+                    {
+                        builder.AddFile("newd.jpg", memoryStream);
+                    }
+                }
+
+                await replyIn.SendMessageAsync(builder);
             }
             else
             {
