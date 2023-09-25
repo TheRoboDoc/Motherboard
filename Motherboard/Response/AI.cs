@@ -17,6 +17,135 @@ namespace Motherboard.Response
         public static readonly EventId AIEvent = new EventId(201, "AI");
 
         /// <summary>
+        /// A set of functions for the AI to use
+        /// </summary>
+        public static class Functions
+        {
+            public static readonly EventId AIFunctionEvent = new EventId(202, "Ai Function Event");
+
+            /// <summary>
+            /// Get a list of functions for the AI use
+            /// </summary>
+            /// <returns>A list of function definitions for the AI to use</returns>
+            public static List<FunctionDefinition> GetFunctions()
+            {
+                List<FunctionDefinition> functionDefinitions = new()
+                {
+                    new FunctionDefinitionBuilder("get_lewd_image", $"Task image generator to generate a lewd image of {Program.BotClient?.CurrentUser.GlobalName}")
+                    .AddParameter("prompt_addition",
+                        PropertyDefinition.DefineString("Additional information to the generator, such as pose, time of day, background etc."))
+                    .Validate()
+                    .Build()
+                };
+
+                return functionDefinitions;
+            }
+
+            struct TaskValue
+            {
+                public string status { get; set; }
+                public int queue { get; set; }
+                public string stream { get; set; }
+                public long task { get; set; }
+            }
+
+            public static async Task<MemoryStream?> GetLewdImage(string? promptAddition = "")
+            {
+                Random rand = new Random();
+
+                using HttpClient httpClient = new HttpClient();
+
+                string apiUrl = "http://192.168.0.123:9000/render";
+
+                string json = $"{{\"prompt\":\"(best-quality)0.8, perfect anime illustration, Grey haired cyber girl looking angry, cleavage, 1girl, labcoat, synthetic skin, blue eyes, glowing eyes, detailed eyes, cyborg, naked, unbuttoned, NSFW, {promptAddition}\",\"seed\":{rand.Next(999999999)},\"used_random_seed\":true,\"negative_prompt\":\"(worst quality)0.8, (surreal)0.8, (modernism)0.8, (art deco)0.8, (art nouveau)0.8, badhandv4, bhands-neg, easynegative, negative_hand-neg, verybadimagenegative_v1.3\",\"num_outputs\":1,\"num_inference_steps\":30,\"guidance_scale\":7.5,\"width\":768,\"height\":768,\"vram_usage_level\":\"balanced\",\"sampler_name\":\"dpmpp_2m\",\"use_stable_diffusion_model\":\"flat2DAnimerge_v20\",\"clip_skip\":true,\"use_vae_model\":\"ClearVAE_V2.3\",\"stream_progress_updates\":true,\"stream_image_progress\":false,\"show_only_filtered_image\":true,\"block_nsfw\":false,\"output_format\":\"jpeg\",\"output_quality\":95,\"output_lossless\":false,\"metadata_output_format\":\"none\",\"original_prompt\":\"(best-quality)0.8, perfect anime illustration, Grey haired cyber girl looking angry, cleavage, 1girl, labcoat, synthetic skin, blue eyes, glowing eyes, detailed eyes, cyborg, naked, unbuttoned, NSFW\",\"active_tags\":[],\"inactive_tags\":[],\"use_lora_model\":[\"眼睛双\",\"eExpressions2\",\"add_detail\"],\"lora_alpha\":[\"2\",\"0.75\",\"0.5\"],\"use_embeddings_model\":[\"badhandv4\",\"bhands-neg\",\"easynegative\",\"negative_hand-neg\"],\"session_id\":\"{140671726617792}\"}}";
+
+                long task = -1;
+
+                // Create a StringContent object with the JSON data
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                try
+                {
+                    // Send the POST request
+                    HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                    // Check if the response is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read the response content as a string
+                        string responseContent = await response.Content.ReadAsStringAsync();
+
+                        try
+                        {
+                            TaskValue taskValue = JsonConvert.DeserializeObject<TaskValue>(responseContent);
+
+                            task = taskValue.task;
+                        }
+                        catch
+                        {
+                            task = -1;
+                        }
+
+                        Program.BotClient?.Logger.LogInformation(task.ToString());
+                    }
+                    else
+                    {
+                        Program.BotClient?.Logger.LogWarning("Error: {error}", response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Program.BotClient?.Logger.LogError("Error: {error}", ex.Message);
+                }
+
+                if (task == -1)
+                {
+                    return null;
+                }
+
+                while (true)
+                {
+                    try
+                    {
+                        HttpResponseMessage response = await httpClient.GetAsync($"http://192.168.0.123:9000/image/stream/{task}");
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string responseContent = await response.Content.ReadAsStringAsync();
+
+                            if (responseContent.Contains("\"status\":\"succeeded\""))
+                            {
+                                Program.BotClient?.Logger.LogInformation("Job succeeded!");
+
+                                string pattern = @"data:image/jpeg;base64,([^""]+)";
+
+                                MatchCollection matches = Regex.Matches(responseContent, pattern);
+
+                                string base64ImageData = matches[0].Groups[1].Value;
+
+                                byte[] imageBytes = Convert.FromBase64String(base64ImageData);
+
+                                MemoryStream memoryStream = new MemoryStream(imageBytes);
+
+                                return memoryStream;
+                            }
+                        }
+                        else
+                        {
+                            Program.BotClient?.Logger.LogError(response.StatusCode.ToString());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Program.BotClient?.Logger.LogError(ex.Message);
+                    }
+
+                    await Task.Delay(1000);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets setup messages. Uses MessageCreateEventArgs
         /// </summary>
         /// <param name="displayName">Bot's display name</param>
