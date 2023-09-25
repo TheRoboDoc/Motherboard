@@ -397,7 +397,7 @@ namespace Motherboard.Response
                     Program.BotClient?.Logger.LogWarning("Image is null");
                 }
 
-                if (string.IsNullOrEmpty(response))
+                if (string.IsNullOrEmpty(response) && image == null)
                 {
                     return Tuple.Create(false, "No message content", image);
                 }
