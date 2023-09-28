@@ -288,7 +288,7 @@ namespace Motherboard.Response
         /// </list>
         /// </returns>
         /// <exception cref="NullReferenceException">OpenAI text generation failed with an unknown error</exception>
-        public static async Task<Tuple<bool, string, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
+        public static async Task<Tuple<bool, string?, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
         {
             //Getting bot user info
             string displayName = messageArgs.Guild.CurrentMember.DisplayName;
@@ -368,7 +368,7 @@ namespace Motherboard.Response
             {
                 Program.BotClient?.Logger.LogError(AIEvent, "OpenAI service isn't on");
 
-                return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc", image);
+                return Tuple.Create<bool, string?, MemoryStream?>(false, "OpenAI service isn't on, if error presists contact RoboDoc", image);
             }
 
             //Sending OpenAI API request for chat reply
@@ -384,12 +384,26 @@ namespace Motherboard.Response
                 Functions = Functions.GetFunctions()
             });
 
-            string response;
+            string? response;
 
             //If we get a proper result from OpenAI
             if (completionResult.Successful)
             {
-                response = completionResult.Choices.First().Message.Content;
+                if (completionResult.Choices.Any())
+                {
+                    try
+                    {
+                        response = completionResult.Choices.Where(response => response.Message.Content != null)?.First().Message.Content;
+                    }
+                    catch
+                    {
+                        response = null;
+                    }
+                }
+                else
+                {
+                    response = null;
+                }
 
                 FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
 
@@ -405,21 +419,21 @@ namespace Motherboard.Response
 
                 if (string.IsNullOrEmpty(response) && image == null)
                 {
-                    return Tuple.Create(false, "No message content", image);
+                    return Tuple.Create<bool, string?, MemoryStream?>(false, "No message content", image);
                 }
 
                 if (!messageArgs.Channel.IsNSFW)
                 {
                     if (AICheck(response).Result)
                     {
-                        return Tuple.Create(true, "**Filtered**", image);
+                        return Tuple.Create<bool, string?, MemoryStream?>(true, "**Filtered**", image);
                     }
 
                     Tuple<bool, string?> filter = Check(response);
 
                     if (filter.Item1)
                     {
-                        return Tuple.Create(true, "**Filtered**", image);
+                        return Tuple.Create<bool, string?, MemoryStream?>(true, "**Filtered**", image);
                     }
                 }
 
@@ -439,7 +453,8 @@ namespace Motherboard.Response
 
                 Program.BotClient?.Logger.LogError(AIEvent, "{ErrorCode}: {ErrorMessage}", completionResult.Error.Code, completionResult.Error.Message);
 
-                return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}", image);
+                return Tuple.Create<bool, string?, MemoryStream?>
+                    (false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}", image);
             }
 
             return Tuple.Create(true, response, image);
