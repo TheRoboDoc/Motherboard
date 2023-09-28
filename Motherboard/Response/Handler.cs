@@ -68,7 +68,7 @@ namespace Motherboard.Response
 
                 if (response != null)
                 {
-                   builder.WithContent(response);
+                    builder.WithContent(response);
                 }
 
                 if (messageArgs.Channel.IsNSFW)

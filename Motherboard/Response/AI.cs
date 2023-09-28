@@ -95,7 +95,7 @@ namespace Motherboard.Response
                     }
                     else
                     {
-                        Program.BotClient?.Logger.LogWarning(AIFunctionEvent, "Generation {task} error. ({errorcode}: {errormessage})", 
+                        Program.BotClient?.Logger.LogWarning(AIFunctionEvent, "Generation {task} error. ({errorcode}: {errormessage})",
                             task, response.StatusCode, response.ReasonPhrase);
                     }
                 }
@@ -138,7 +138,7 @@ namespace Motherboard.Response
                         }
                         else
                         {
-                            Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation task {task} error. ({errorcode}: {errormessage})", 
+                            Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation task {task} error. ({errorcode}: {errormessage})",
                                 task, response.StatusCode, response.ReasonPhrase);
                         }
                     }
