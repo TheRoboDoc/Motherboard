@@ -407,9 +407,12 @@ namespace Motherboard.Response
 
                 FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
 
+                bool imageCalled = false;
+
                 if (messageArgs.Channel.IsNSFW && function?.Name == "get_lewd_image")
                 {
                     image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
+                    imageCalled = true;
                 }
 
                 if (image == null)
@@ -440,6 +443,13 @@ namespace Motherboard.Response
                 //Log the AI interaction only if we are in debug mode
                 if (Program.DebugStatus())
                 {
+                    string? debugResponseLog = response;
+
+                    if (imageCalled)
+                    {
+                        debugResponseLog += " newd.jpg";
+                    }
+
                     Program.BotClient?.Logger.LogDebug(AIEvent, "Message: {message}", messageArgs.Message.Content);
                     Program.BotClient?.Logger.LogDebug(AIEvent, "Reply: {response}", response);
                 }
