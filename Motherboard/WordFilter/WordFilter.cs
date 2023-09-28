@@ -50,8 +50,13 @@ namespace Motherboard.WordFilter
         /// A tuple with a bool and a string. The bool is true if a blacklisted word was detected and false otherwise.
         /// String contains the word that was detected, otherwise the string is null.
         /// </returns>
-        public static Tuple<bool, string?> Check(string sentence)
+        public static Tuple<bool, string?> Check(string? sentence)
         {
+            if (string.IsNullOrEmpty(sentence))
+            {
+                return new Tuple<bool, string?>(false, null);
+            }
+
             sentence = sentence.ToLower();
 
             List<string>? badWords = JsonSerializer.Deserialize<List<string>>(BLACKLIST.blacklist);
