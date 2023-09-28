@@ -91,16 +91,17 @@ namespace Motherboard.Response
                             task = -1;
                         }
 
-                        Program.BotClient?.Logger.LogInformation(task.ToString());
+                        Program.BotClient?.Logger.LogInformation(AIFunctionEvent, "Generation task {task} has started", task);
                     }
                     else
                     {
-                        Program.BotClient?.Logger.LogWarning("Error: {error}", response.StatusCode);
+                        Program.BotClient?.Logger.LogWarning(AIFunctionEvent, "Generation {task} error. ({errorcode}: {errormessage})", 
+                            task, response.StatusCode, response.ReasonPhrase);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Program.BotClient?.Logger.LogError("Error: {error}", ex.Message);
+                    Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation {task} error. ({exception})", task, ex.Message);
                 }
 
                 if (task == -1)
@@ -120,7 +121,7 @@ namespace Motherboard.Response
 
                             if (responseContent.Contains("\"status\":\"succeeded\""))
                             {
-                                Program.BotClient?.Logger.LogInformation("Job succeeded!");
+                                Program.BotClient?.Logger.LogInformation(AIFunctionEvent, "Generation task {task} succeeded", task);
 
                                 string pattern = @"data:image/jpeg;base64,([^""]+)";
 
@@ -137,12 +138,13 @@ namespace Motherboard.Response
                         }
                         else
                         {
-                            Program.BotClient?.Logger.LogError(response.StatusCode.ToString());
+                            Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation task {task} error. ({errorcode}: {errormessage})", 
+                                task, response.StatusCode, response.ReasonPhrase);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Program.BotClient?.Logger.LogError(ex.Message);
+                        Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation {task} error. ({exception})", task, ex.Message);
                     }
 
                     await Task.Delay(1000);
@@ -398,7 +400,7 @@ namespace Motherboard.Response
 
                 if (image == null)
                 {
-                    Program.BotClient?.Logger.LogWarning("Image is null");
+                    Program.BotClient?.Logger.LogWarning(AIEvent, "Image is null");
                 }
 
                 if (string.IsNullOrEmpty(response) && image == null)
