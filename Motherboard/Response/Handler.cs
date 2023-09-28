@@ -56,23 +56,26 @@ namespace Motherboard.Response
                 }
             });
 
-            Tuple<bool, string, MemoryStream?> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
+            Tuple<bool, string?, MemoryStream?> AIGenerationResponse = await AI.GenerateChatResponse(messageArgs);
 
             typing = false;
 
-            string response = AIGenerationResponse.Item2;
+            string? response = AIGenerationResponse.Item2;
 
             if (AIGenerationResponse.Item1)
             {
                 DiscordMessageBuilder builder = new DiscordMessageBuilder();
 
-                builder.WithContent(response);
+                if (response != null)
+                {
+                    builder.WithContent(response);
+                }
 
                 if (messageArgs.Channel.IsNSFW)
                 {
                     MemoryStream? memoryStream = AIGenerationResponse.Item3;
 
-                    if (AIGenerationResponse.Item3 != null)
+                    if (memoryStream != null)
                     {
                         builder.AddFile("newd.jpg", memoryStream);
                     }

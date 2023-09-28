@@ -62,7 +62,7 @@ namespace Motherboard.Response
 
                 string apiUrl = "http://192.168.0.123:9000/render";
 
-                string json = $"{{\"prompt\":\"(best-quality)0.8, perfect anime illustration, Grey haired cyber girl looking angry, cleavage, 1girl, labcoat, synthetic skin, blue eyes, glowing eyes, detailed eyes, cyborg, naked, unbuttoned, NSFW, {promptAddition}\",\"seed\":{rand.Next(999999999)},\"used_random_seed\":true,\"negative_prompt\":\"(worst quality)0.8, (surreal)0.8, (modernism)0.8, (art deco)0.8, (art nouveau)0.8, badhandv4, bhands-neg, easynegative, negative_hand-neg, verybadimagenegative_v1.3\",\"num_outputs\":1,\"num_inference_steps\":30,\"guidance_scale\":7.5,\"width\":768,\"height\":768,\"vram_usage_level\":\"balanced\",\"sampler_name\":\"dpmpp_2m\",\"use_stable_diffusion_model\":\"flat2DAnimerge_v20\",\"clip_skip\":true,\"use_vae_model\":\"ClearVAE_V2.3\",\"stream_progress_updates\":true,\"stream_image_progress\":false,\"show_only_filtered_image\":true,\"block_nsfw\":false,\"output_format\":\"jpeg\",\"output_quality\":95,\"output_lossless\":false,\"metadata_output_format\":\"none\",\"original_prompt\":\"(best-quality)0.8, perfect anime illustration, Grey haired cyber girl looking angry, cleavage, 1girl, labcoat, synthetic skin, blue eyes, glowing eyes, detailed eyes, cyborg, naked, unbuttoned, NSFW\",\"active_tags\":[],\"inactive_tags\":[],\"use_lora_model\":[\"眼睛双\",\"eExpressions2\",\"add_detail\"],\"lora_alpha\":[\"2\",\"0.75\",\"0.5\"],\"use_embeddings_model\":[\"badhandv4\",\"bhands-neg\",\"easynegative\",\"negative_hand-neg\"],\"session_id\":\"{140671726617792}\"}}";
+                string json = $"{{\"prompt\":\"(best-quality)0.8, perfect anime illustration, Grey haired cyber girl looking angry, cleavage, 1girl, labcoat, synthetic skin, blue eyes, glowing eyes, detailed eyes, cyborg, naked, unbuttoned, NSFW, {promptAddition}\",\"seed\":{rand.Next(999999999)},\"used_random_seed\":true,\"negative_prompt\":\"(worst quality)0.8, (surreal)0.8, (modernism)0.8, (art deco)0.8, (art nouveau)0.8, badhandv4, bhands-neg, easynegative, negative_hand-neg, verybadimagenegative_v1.3\",\"num_outputs\":1,\"num_inference_steps\":30,\"guidance_scale\":7.5,\"width\":768,\"height\":768,\"vram_usage_level\":\"balanced\",\"sampler_name\":\"dpmpp_2m\",\"use_stable_diffusion_model\":\"flat2DAnimerge_v30\",\"clip_skip\":true,\"use_vae_model\":\"ClearVAE_V2.3\",\"stream_progress_updates\":true,\"stream_image_progress\":false,\"show_only_filtered_image\":true,\"block_nsfw\":false,\"output_format\":\"jpeg\",\"output_quality\":95,\"output_lossless\":false,\"metadata_output_format\":\"none\",\"original_prompt\":\"(best-quality)0.8, perfect anime illustration, Grey haired cyber girl looking angry, cleavage, 1girl, labcoat, synthetic skin, blue eyes, glowing eyes, detailed eyes, cyborg, naked, unbuttoned, NSFW\",\"active_tags\":[],\"inactive_tags\":[],\"use_lora_model\":[\"眼睛双\",\"eExpressions2\",\"add_detail\"],\"lora_alpha\":[\"2\",\"0.75\",\"0.5\"],\"use_embeddings_model\":[\"badhandv4\",\"bhands-neg\",\"easynegative\",\"negative_hand-neg\"],\"session_id\":\"{140671726617792}\"}}";
 
                 long task = -1;
 
@@ -91,16 +91,17 @@ namespace Motherboard.Response
                             task = -1;
                         }
 
-                        Program.BotClient?.Logger.LogInformation(task.ToString());
+                        Program.BotClient?.Logger.LogInformation(AIFunctionEvent, "Generation task {task} has started", task);
                     }
                     else
                     {
-                        Program.BotClient?.Logger.LogWarning("Error: {error}", response.StatusCode);
+                        Program.BotClient?.Logger.LogWarning(AIFunctionEvent, "Generation {task} error. ({errorcode}: {errormessage})",
+                            task, response.StatusCode, response.ReasonPhrase);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Program.BotClient?.Logger.LogError("Error: {error}", ex.Message);
+                    Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation {task} error. ({exception})", task, ex.Message);
                 }
 
                 if (task == -1)
@@ -120,7 +121,7 @@ namespace Motherboard.Response
 
                             if (responseContent.Contains("\"status\":\"succeeded\""))
                             {
-                                Program.BotClient?.Logger.LogInformation("Job succeeded!");
+                                Program.BotClient?.Logger.LogInformation(AIFunctionEvent, "Generation task {task} succeeded", task);
 
                                 string pattern = @"data:image/jpeg;base64,([^""]+)";
 
@@ -137,12 +138,13 @@ namespace Motherboard.Response
                         }
                         else
                         {
-                            Program.BotClient?.Logger.LogError(response.StatusCode.ToString());
+                            Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation task {task} error. ({errorcode}: {errormessage})",
+                                task, response.StatusCode, response.ReasonPhrase);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Program.BotClient?.Logger.LogError(ex.Message);
+                        Program.BotClient?.Logger.LogError(AIFunctionEvent, "Generation {task} error. ({exception})", task, ex.Message);
                     }
 
                     await Task.Delay(1000);
@@ -286,7 +288,7 @@ namespace Motherboard.Response
         /// </list>
         /// </returns>
         /// <exception cref="NullReferenceException">OpenAI text generation failed with an unknown error</exception>
-        public static async Task<Tuple<bool, string, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
+        public static async Task<Tuple<bool, string?, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
         {
             //Getting bot user info
             string displayName = messageArgs.Guild.CurrentMember.DisplayName;
@@ -366,7 +368,7 @@ namespace Motherboard.Response
             {
                 Program.BotClient?.Logger.LogError(AIEvent, "OpenAI service isn't on");
 
-                return Tuple.Create(false, "OpenAI service isn't on, if error presists contact RoboDoc", image);
+                return Tuple.Create<bool, string?, MemoryStream?>(false, "OpenAI service isn't on, if error presists contact RoboDoc", image);
             }
 
             //Sending OpenAI API request for chat reply
@@ -382,48 +384,72 @@ namespace Motherboard.Response
                 Functions = Functions.GetFunctions()
             });
 
-            string response;
+            string? response;
 
             //If we get a proper result from OpenAI
             if (completionResult.Successful)
             {
-                response = completionResult.Choices.First().Message.Content;
+                if (completionResult.Choices.Any())
+                {
+                    try
+                    {
+                        response = completionResult.Choices.Where(response => response.Message.Content != null)?.First().Message.Content;
+                    }
+                    catch
+                    {
+                        response = null;
+                    }
+                }
+                else
+                {
+                    response = null;
+                }
 
                 FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
+
+                bool imageCalled = false;
 
                 if (messageArgs.Channel.IsNSFW && function?.Name == "get_lewd_image")
                 {
                     image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
+                    imageCalled = true;
                 }
 
                 if (image == null)
                 {
-                    Program.BotClient?.Logger.LogWarning("Image is null");
+                    Program.BotClient?.Logger.LogWarning(AIEvent, "Image is null");
                 }
 
                 if (string.IsNullOrEmpty(response) && image == null)
                 {
-                    return Tuple.Create(false, "No message content", image);
+                    return Tuple.Create<bool, string?, MemoryStream?>(false, "No message content", image);
                 }
 
                 if (!messageArgs.Channel.IsNSFW)
                 {
                     if (AICheck(response).Result)
                     {
-                        return Tuple.Create(true, "**Filtered**", image);
+                        return Tuple.Create<bool, string?, MemoryStream?>(true, "**Filtered**", image);
                     }
 
                     Tuple<bool, string?> filter = Check(response);
 
                     if (filter.Item1)
                     {
-                        return Tuple.Create(true, "**Filtered**", image);
+                        return Tuple.Create<bool, string?, MemoryStream?>(true, "**Filtered**", image);
                     }
                 }
 
                 //Log the AI interaction only if we are in debug mode
                 if (Program.DebugStatus())
                 {
+                    string? debugResponseLog = response;
+
+                    if (imageCalled)
+                    {
+                        debugResponseLog += " newd.jpg";
+                    }
+
                     Program.BotClient?.Logger.LogDebug(AIEvent, "Message: {message}", messageArgs.Message.Content);
                     Program.BotClient?.Logger.LogDebug(AIEvent, "Reply: {response}", response);
                 }
@@ -437,7 +463,8 @@ namespace Motherboard.Response
 
                 Program.BotClient?.Logger.LogError(AIEvent, "{ErrorCode}: {ErrorMessage}", completionResult.Error.Code, completionResult.Error.Message);
 
-                return Tuple.Create(false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}", image);
+                return Tuple.Create<bool, string?, MemoryStream?>
+                    (false, $"OpenAI error {completionResult.Error.Code}: {completionResult.Error.Message}", image);
             }
 
             return Tuple.Create(true, response, image);
