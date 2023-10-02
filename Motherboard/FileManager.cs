@@ -6,15 +6,15 @@ namespace Motherboard
     /// <summary>
     /// Class responsible for managment of files
     /// </summary>
-    public static class FileManager
+    internal static class FileManager
     {
         /// <summary>
         /// Paths to directories that the bot uses to store different kinds of data
         /// </summary>
-        public readonly struct Paths
+        internal readonly struct Paths
         {
-            public static readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            public static readonly string channelSettings = $@"{basePath}/ChannelSettings";
+            internal static readonly string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            internal static readonly string channelSettings = $@"{basePath}/ChannelSettings";
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Motherboard
         /// <returns>
         /// A list of all directories created
         /// </returns>
-        public static async Task<List<string>> DirCheck()
+        internal static async Task<List<string>> DirCheck()
         {
             List<string> list = new List<string>();
 
@@ -96,7 +96,7 @@ namespace Motherboard
         /// <item>False: Directory doesn't exists</item>
         /// </list>
         /// </returns>
-        public static bool DirectoryExists(string path)
+        internal static bool DirectoryExists(string path)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
@@ -112,7 +112,7 @@ namespace Motherboard
         /// Creates a directory
         /// </summary>
         /// <param name="path">Path of the directory to create</param>
-        public static void CreateDirectory(string path)
+        internal static void CreateDirectory(string path)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
@@ -122,14 +122,14 @@ namespace Motherboard
         /// <summary>
         /// Sets of methods to manage channel settings
         /// </summary>
-        public static class ChannelManager
+        internal static class ChannelManager
         {
             /// <summary>
             /// Channel specific settings
             /// </summary>
-            public struct Channel
+            internal struct Channel
             {
-                public bool AIIgnore { get; set; }
+                internal bool AIIgnore { get; set; }
             }
 
             /// <summary>
@@ -160,7 +160,7 @@ namespace Motherboard
             /// <returns>
             /// A channel struct
             /// </returns>
-            public static Channel ReadChannelInfo(string guildID, string channelID)
+            internal static Channel ReadChannelInfo(string guildID, string channelID)
             {
                 Tuple<string, string> paths = IDToPath(guildID, channelID);
 
@@ -202,7 +202,7 @@ namespace Motherboard
             /// <param name="channelID">The ID of the channel</param>
             /// <param name="overwrite">To overwrite the existing settings(if they exist) or not (default is false)</param>
             /// <exception cref="Exception">If channel settings exist, but overwrite is set to false</exception>
-            public static void WriteChannelInfo(Channel channel, string guildID, string channelID, bool overwrite = false)
+            internal static void WriteChannelInfo(Channel channel, string guildID, string channelID, bool overwrite = false)
             {
                 Tuple<string, string> paths = IDToPath(guildID, channelID);
 
