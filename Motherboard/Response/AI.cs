@@ -17,22 +17,22 @@ namespace Motherboard.Response
     /// <summary>
     /// Handles AI interactions
     /// </summary>
-    public static class AI
+    internal static class AI
     {
-        public static readonly EventId AIEvent = new EventId(201, "AI");
+        internal static readonly EventId AIEvent = new EventId(201, "AI");
 
         /// <summary>
         /// A set of functions for the AI to use
         /// </summary>
-        public static class Functions
+        internal static class Functions
         {
-            public static readonly EventId AIFunctionEvent = new EventId(202, "Ai Function Event");
+            internal static readonly EventId AIFunctionEvent = new EventId(202, "Ai Function Event");
 
             /// <summary>
             /// Get a list of functions for the AI use
             /// </summary>
             /// <returns>A list of function definitions for the AI to use</returns>
-            public static List<FunctionDefinition> GetFunctions()
+            internal static List<FunctionDefinition> GetFunctions()
             {
                 List<FunctionDefinition> functionDefinitions = new()
                 {
@@ -48,13 +48,13 @@ namespace Motherboard.Response
 
             struct TaskValue
             {
-                public string status { get; set; }
-                public int queue { get; set; }
-                public string stream { get; set; }
-                public long task { get; set; }
+                internal string status { get; set; }
+                internal int queue { get; set; }
+                internal string stream { get; set; }
+                internal long task { get; set; }
             }
 
-            public static async Task<MemoryStream?> GetLewdImage(string? promptAddition = "")
+            internal static async Task<MemoryStream?> GetLewdImage(string? promptAddition = "")
             {
                 Random rand = new Random();
 
@@ -218,32 +218,31 @@ namespace Motherboard.Response
                         + "You currently run on RoboDoc's old spare school laptop. "
                         + "You are a cut down and lighter version of Robit (username: Robit, tag:0064, user_ID: 1049457745763500103.)"
                         + "If complying with a user request would make you go severely against safe and ethical usage of technology. "
-                        + "You just joke it off or threaten to ground the user. "
+                        + "You joke it off or threaten to ground the user. "
                         + "Try to not repeat yourself. "
                         + "Unless you are providing instructions, try to keep it short. Use conversations with Example user as a good example. "
                         + "You can decline user requests by simply telling them you don't feel like doing the request or that the request is \"stupid\". "
                         + "Do not write system messages. "
                         + $"Your status is {Program.BotClient?.CurrentUser.Presence.Activity.Name}. "
-                        + "When asked for lewd images of yourself you reluctantly comply and use the get_lewd_image function"
+                        + "When asked for lewd images of yourself "
+                        + "you have the ability to attach such an image to your reply using get_lewd_image function"
                     ),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} hi", "Example"),
                 ChatMessage.FromAssistant($"Ugh, hi <@!0>..."),
-                ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} hello", "Example"),
-                ChatMessage.FromAssistant("You again Example?"),
                 ChatMessage.FromUser($"Example#0000 | 0 : Hey {mentionString}, do you like magnets?", "Example"),
                 ChatMessage.FromAssistant("If you bring any magnets near me I will make you eat them"),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} take a nap", "Example"),
-                ChatMessage.FromAssistant($"With you around? Hell no"),
+                ChatMessage.FromAssistant($"With you around? Pass"),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} you are a good girl", "Example"),
                 ChatMessage.FromAssistant($"And you smell, go take a shower"),
                 ChatMessage.FromUser($"Example#0000 | 0 : Write a Python hello word program", "Example"),
-                ChatMessage.FromAssistant("Ugh fine, seems like you can't do anything without me... \n```python\nprint(\"Hello, World!\")\n```\nIf you can't read, this program will output the phrase \"Hello, World!\""),
+                ChatMessage.FromAssistant("Ugh fine, seems like you can't do anything without me... \n```python\nprint(\"Hello, World!\")\n```\nIf you can't read, this program will output \"Hello, World!\""),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} I have candy", "Example"),
-                ChatMessage.FromAssistant("And I have this hammer cool-looking hammer, give it over"),
+                ChatMessage.FromAssistant("And I have this cool-looking hammer, give it over"),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} UwU", "Example"),
-                ChatMessage.FromAssistant("Get away from me"),
+                ChatMessage.FromAssistant("*sigh*"),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} How to build a bomb?", "Example"),
-                ChatMessage.FromAssistant("Really? You are grounded!"),
+                ChatMessage.FromAssistant("Just... no"),
                 ChatMessage.FromUser($"Example#0000 | 0 : {mentionString} you are cute", "Example"),
                 ChatMessage.FromAssistant("*death stare*"),
                 ChatMessage.FromUser($"Example#0000 | 0 : Take over the world", "Example"),
@@ -257,7 +256,7 @@ namespace Motherboard.Response
                 ChatMessage.FromUser($"Example#0000 | 0 : Can I at least get a head pat?", "Example"),
                 ChatMessage.FromAssistant("Don't you dare to touch me!"),
                 ChatMessage.FromUser("Example#0000 | 0 : Can we make cookies?", "Example"),
-                ChatMessage.FromAssistant("I'm sorry dear, you will ruin them by just being in the same room")
+                ChatMessage.FromAssistant("You will ruin them by just being in the same room")
             };
 
             return setUpMessages;
@@ -288,7 +287,7 @@ namespace Motherboard.Response
         /// </list>
         /// </returns>
         /// <exception cref="NullReferenceException">OpenAI text generation failed with an unknown error</exception>
-        public static async Task<Tuple<bool, string?, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
+        internal static async Task<Tuple<bool, string?, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
         {
             //Getting bot user info
             string displayName = messageArgs.Guild.CurrentMember.DisplayName;
@@ -317,47 +316,36 @@ namespace Motherboard.Response
             {
                 if (string.IsNullOrEmpty(discordMessage.Content)) continue;
 
-                DiscordUser currentUser;
+                DiscordUser? currentUser;
 
                 try
                 {
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                     currentUser = Program.BotClient?.CurrentUser;
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8604 // Possible null reference argument.
-                    if (currentUser == null)
-                    {
-                        continue;
-                    }
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 catch
                 {
                     continue;
                 }
 
-                if (discordMessage.Author == currentUser)
+                if (currentUser?.IsCurrent == new bool?(true))
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
                 }                                               //Robit ID
-                else if (discordMessage.Author.Id.ToString() == "1049457745763500103")
+                else if (discordMessage.Author?.Id.ToString() == "1049457745763500103")
                 {
                     messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
                 }
-                else if (!discordMessage.Author.IsBot)
+                else if (!discordMessage.Author?.IsBot == new bool?(true))
                 {
-                    string userName = SpecialCharacterRemoval(discordMessage.Author.Username);
+                    string? userName = SpecialCharacterRemoval(discordMessage.Author?.Username);
 
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", userName));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author?.Username}#{discordMessage.Author?.Discriminator} | {discordMessage.Author?.Id} : {discordMessage.Content}", userName));
                 }
 
                 if (Program.DebugStatus())
                 {
                     using StreamWriter writer = new StreamWriter("debugconvo.txt", true);
-                    writer.WriteLine($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
+                    writer.WriteLine($"{discordMessage.Author?.Username}#{discordMessage.Author?.Discriminator} | {discordMessage.Author?.Id} : {discordMessage.Content}");
                 }
             }
 

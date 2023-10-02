@@ -7,9 +7,9 @@ using static Motherboard.FileManager;
 
 namespace Motherboard.Response
 {
-    public static class Handler
+    internal static class Handler
     {
-        public static readonly EventId HandlerEvent = new EventId(301, "Handler");
+        internal static readonly EventId HandlerEvent = new EventId(301, "Handler");
 
         /// <summary>
         /// Runs the response handler that determines to respond or not and how
@@ -17,7 +17,7 @@ namespace Motherboard.Response
         /// <param name="sender">Discord client</param>
         /// <param name="messageArgs">Discord message creation arguments</param>
         /// <returns>Completed task</returns>
-        public static async Task Run(DiscordClient sender, MessageCreateEventArgs messageArgs)
+        internal static async Task Run(DiscordClient sender, MessageCreateEventArgs messageArgs)
         {                                                                     //Motherboard ID
             if (messageArgs.Author.IsBot && messageArgs?.Author.Id.ToString() != "1103797730276548660") return;
 
@@ -190,17 +190,17 @@ namespace Motherboard.Response
         {
             bool botMentioned = false;
 
+            DiscordUser? botUser = Program.BotClient?.CurrentUser;
+
             await Task.Run(() =>
             {
                 foreach (DiscordUser? mentionedUser in messageArgs.MentionedUsers)
                 {
-#pragma warning disable CS8604 // Possible null reference argument.
-                    if (mentionedUser == Program.BotClient?.CurrentUser)
+                    if (botUser?.Equals(mentionedUser) == new bool?(true))
                     {
                         botMentioned = true;
                         break;
                     }
-#pragma warning restore CS8604 // Possible null reference argument.
                 }
             });
 

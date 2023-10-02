@@ -13,7 +13,7 @@ namespace Motherboard.Command
     {
         #region Technical
         [SlashCommand("Ping", "Pings the bot, the bot responds with the ping time in milliseconds")]
-        public static async Task Ping(InteractionContext ctx,
+        internal static async Task Ping(InteractionContext ctx,
 
         [Option("Times", "Amount of times the bot should be pinged (Max 3)")]
         [DefaultValue(1)]
@@ -43,7 +43,7 @@ namespace Motherboard.Command
         #region Help
         [SlashCommand("Commands", "Lists all commands for the bot")]
         [SlashCommandPermissions(Permissions.SendMessages)]
-        public static async Task Commands(InteractionContext ctx,
+        internal static async Task Commands(InteractionContext ctx,
 
         [Option("Visible", "Is the ping visible to others")]
         [DefaultValue(false)]
@@ -109,7 +109,7 @@ namespace Motherboard.Command
         #region Interaction
         #region Introduction
         [SlashCommand("Intro", "Bot introduction")]
-        public static async Task Intro(InteractionContext ctx)
+        internal static async Task Intro(InteractionContext ctx)
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
             {
@@ -130,7 +130,7 @@ namespace Motherboard.Command
         }
 
         [SlashCommand("Github", "Posts a link to Motherboard's GitHub repo")]
-        public static async Task GitHub(InteractionContext ctx)
+        internal static async Task GitHub(InteractionContext ctx)
         {
             await ctx.CreateResponseAsync("https://github.com/TheRoboDoc/Motherboard", true);
         }
@@ -139,7 +139,7 @@ namespace Motherboard.Command
         #region AI Interactions
         [SlashCommand("AI_Ignore", "Should Motherboard's AI module ignore this channel, prompt command will still work")]
         [SlashCommandPermissions(Permissions.ManageChannels | Permissions.ManageMessages)]
-        public static async Task AIIgnore(InteractionContext ctx,
+        internal static async Task AIIgnore(InteractionContext ctx,
             [Option("Ignore", "To ignore or not, true will ignore, false will not")]
             bool ignore,
             [Option("Visible", "Sets the visibility")]

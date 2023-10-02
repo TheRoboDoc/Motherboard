@@ -8,7 +8,7 @@ namespace Motherboard.WordFilter
     /// <summary>
     /// Contains tools for checking out filtered words
     /// </summary>
-    public static class WordFilter
+    internal static class WordFilter
     {
         /// <summary>
         /// Checks with OpenAI moderation if given sentence is allowed
@@ -20,7 +20,7 @@ namespace Motherboard.WordFilter
         /// <item><c>False</c>: Content moderation not triggered</item>
         /// </list>
         /// </returns>
-        public static async Task<bool> AICheck(string? sentence)
+        internal static async Task<bool> AICheck(string? sentence)
         {
             if (Program.OpenAiService == null)
             {
@@ -50,7 +50,7 @@ namespace Motherboard.WordFilter
         /// A tuple with a bool and a string. The bool is true if a blacklisted word was detected and false otherwise.
         /// String contains the word that was detected, otherwise the string is null.
         /// </returns>
-        public static Tuple<bool, string?> Check(string? sentence)
+        internal static Tuple<bool, string?> Check(string? sentence)
         {
             if (string.IsNullOrEmpty(sentence))
             {
@@ -88,8 +88,13 @@ namespace Motherboard.WordFilter
         /// </summary>
         /// <param name="aString">String to clear of special characters</param>
         /// <returns>A string with removed special characters</returns>
-        public static string SpecialCharacterRemoval(string aString)
+        internal static string? SpecialCharacterRemoval(string? aString)
         {
+            if (aString == null)
+            {
+                return null;
+            }
+
             string pattern = @"[+`¨',.\-!""#¤%&/()=?´^*;:_§½@£$€{\[\]}~\\]";
             string replacement = "";
 
