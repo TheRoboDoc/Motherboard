@@ -88,8 +88,13 @@ namespace Motherboard.WordFilter
         /// </summary>
         /// <param name="aString">String to clear of special characters</param>
         /// <returns>A string with removed special characters</returns>
-        internal static string SpecialCharacterRemoval(string aString)
+        internal static string? SpecialCharacterRemoval(string? aString)
         {
+            if (aString == null)
+            {
+                return null;
+            }
+
             string pattern = @"[+`¨',.\-!""#¤%&/()=?´^*;:_§½@£$€{\[\]}~\\]";
             string replacement = "";
 

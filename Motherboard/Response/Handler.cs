@@ -190,17 +190,17 @@ namespace Motherboard.Response
         {
             bool botMentioned = false;
 
+            DiscordUser? botUser = Program.BotClient?.CurrentUser;
+
             await Task.Run(() =>
             {
                 foreach (DiscordUser? mentionedUser in messageArgs.MentionedUsers)
                 {
-#pragma warning disable CS8604 // Possible null reference argument.
-                    if (mentionedUser == Program.BotClient?.CurrentUser)
+                    if (botUser?.Equals(mentionedUser) == new bool?(true))
                     {
                         botMentioned = true;
                         break;
                     }
-#pragma warning restore CS8604 // Possible null reference argument.
                 }
             });
 

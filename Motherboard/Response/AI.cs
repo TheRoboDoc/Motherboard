@@ -316,47 +316,36 @@ namespace Motherboard.Response
             {
                 if (string.IsNullOrEmpty(discordMessage.Content)) continue;
 
-                DiscordUser currentUser;
+                DiscordUser? currentUser;
 
                 try
                 {
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                     currentUser = Program.BotClient?.CurrentUser;
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8604 // Possible null reference argument.
-                    if (currentUser == null)
-                    {
-                        continue;
-                    }
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
                 }
                 catch
                 {
                     continue;
                 }
 
-                if (discordMessage.Author == currentUser)
+                if (currentUser?.IsCurrent == new bool?(true))
                 {
                     messages.Add(ChatMessage.FromAssistant(discordMessage.Content));
                 }                                               //Robit ID
-                else if (discordMessage.Author.Id.ToString() == "1049457745763500103")
+                else if (discordMessage.Author?.Id.ToString() == "1049457745763500103")
                 {
                     messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", discordMessage.Author.Username));
                 }
-                else if (!discordMessage.Author.IsBot)
+                else if (!discordMessage.Author?.IsBot == new bool?(true))
                 {
-                    string userName = SpecialCharacterRemoval(discordMessage.Author.Username);
+                    string? userName = SpecialCharacterRemoval(discordMessage.Author?.Username);
 
-                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}", userName));
+                    messages.Add(ChatMessage.FromUser($"{discordMessage.Author?.Username}#{discordMessage.Author?.Discriminator} | {discordMessage.Author?.Id} : {discordMessage.Content}", userName));
                 }
 
                 if (Program.DebugStatus())
                 {
                     using StreamWriter writer = new StreamWriter("debugconvo.txt", true);
-                    writer.WriteLine($"{discordMessage.Author.Username}#{discordMessage.Author.Discriminator} | {discordMessage.Author.Id} : {discordMessage.Content}");
+                    writer.WriteLine($"{discordMessage.Author?.Username}#{discordMessage.Author?.Discriminator} | {discordMessage.Author?.Id} : {discordMessage.Content}");
                 }
             }
 
