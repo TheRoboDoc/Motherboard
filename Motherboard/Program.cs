@@ -14,9 +14,9 @@ using System.Diagnostics;
 
 namespace Motherboard
 {
-    internal class Program
+    public class Program
     {
-        private static void Main()
+        static void Main()
         {
             while (true)
             {
@@ -24,15 +24,15 @@ namespace Motherboard
             }
         }
 
-        internal static DiscordClient? BotClient;
+        public static DiscordClient? BotClient;
 
-        internal static OpenAIService? OpenAiService;
+        public static OpenAIService? OpenAiService;
 
         /// <summary>
         /// Main Thread
         /// </summary>
         /// <returns>Nothing</returns>
-        private static async Task MainAsync()
+        static async Task MainAsync()
         {
             OpenAiService = new OpenAIService(new OpenAiOptions()
             {
@@ -122,7 +122,7 @@ namespace Motherboard
             await Task.Delay(-1);
         }
 
-        internal static string? ChosenStatus;
+        public static string? ChosenStatus;
 
         /// <summary>
         /// Updates the bots status to a random predetermined value. 
@@ -186,7 +186,7 @@ namespace Motherboard
         /// <item><c>False</c>: Not in debug</item>
         /// </list>
         /// </returns>
-        internal static bool DebugStatus()
+        public static bool DebugStatus()
         {
             bool debugState;
 

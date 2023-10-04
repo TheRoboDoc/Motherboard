@@ -17,22 +17,22 @@ namespace Motherboard.Response
     /// <summary>
     /// Handles AI interactions
     /// </summary>
-    internal static class AI
+    public static class AI
     {
-        internal static readonly EventId AIEvent = new EventId(201, "AI");
+        public static readonly EventId AIEvent = new EventId(201, "AI");
 
         /// <summary>
         /// A set of functions for the AI to use
         /// </summary>
-        internal static class Functions
+        public static class Functions
         {
-            internal static readonly EventId AIFunctionEvent = new EventId(202, "Ai Function Event");
+            public static readonly EventId AIFunctionEvent = new EventId(202, "Ai Function Event");
 
             /// <summary>
             /// Get a list of functions for the AI use
             /// </summary>
             /// <returns>A list of function definitions for the AI to use</returns>
-            internal static List<FunctionDefinition> GetFunctions()
+            public static List<FunctionDefinition> GetFunctions()
             {
                 List<FunctionDefinition> functionDefinitions = new()
                 {
@@ -48,13 +48,13 @@ namespace Motherboard.Response
 
             struct TaskValue
             {
-                internal string status { get; set; }
-                internal int queue { get; set; }
-                internal string stream { get; set; }
-                internal long task { get; set; }
+                public string status { get; set; }
+                public int queue { get; set; }
+                public string stream { get; set; }
+                public long task { get; set; }
             }
 
-            internal static async Task<MemoryStream?> GetLewdImage(string? promptAddition = "")
+            public static async Task<MemoryStream?> GetLewdImage(string? promptAddition = "")
             {
                 Random rand = new Random();
 
@@ -287,7 +287,7 @@ namespace Motherboard.Response
         /// </list>
         /// </returns>
         /// <exception cref="NullReferenceException">OpenAI text generation failed with an unknown error</exception>
-        internal static async Task<Tuple<bool, string?, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
+        public static async Task<Tuple<bool, string?, MemoryStream?>> GenerateChatResponse(MessageCreateEventArgs messageArgs)
         {
             //Getting bot user info
             string displayName = messageArgs.Guild.CurrentMember.DisplayName;
