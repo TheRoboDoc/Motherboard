@@ -37,13 +37,33 @@ namespace Motherboard.Response
                 List<FunctionDefinition> functionDefinitions = new()
                 {
                     new FunctionDefinitionBuilder("get_lewd_image", $"Task image generator to generate a lewd image of {Program.BotClient?.CurrentUser.GlobalName}")
-                    .AddParameter("prompt_addition",
-                        PropertyDefinition.DefineString("Additional information to the generator, such as pose, time of day, background etc."))
-                    .Validate()
-                    .Build()
+                        .AddParameter("prompt_addition",
+                            PropertyDefinition.DefineString("Additional information to the generator, such as pose, time of day, background etc."))
+                        .Validate()
+                        .Build(),
+
+                    new FunctionDefinitionBuilder("get_random_number", "Get a psudorandom number")
+                        .AddParameter("min_value", PropertyDefinition.DefineInteger("A minimum of the random number range"))
+                        .AddParameter("max_value", PropertyDefinition.DefineInteger("A maximum of the random number range"))
+                        .Validate()
+                        .Build()
                 };
 
                 return functionDefinitions;
+            }
+
+            public static string? GetRandomNumber(int? minValue, int? maxValue)
+            {
+                if (minValue == null || maxValue == null)
+                {
+                    Program.BotClient?.Logger.LogError(AIEvent, "AI tried using invalid integers");
+
+                    return null;
+                }
+
+                Random rnd = new();
+
+                return rnd.Next(minValue.Value, maxValue.Value).ToString();
             }
 
             struct TaskValue
@@ -408,6 +428,24 @@ namespace Motherboard.Response
                 {
                     image = await Functions.GetLewdImage(function?.ParseArguments().First().Value.ToString());
                     imageCalled = true;
+                }
+                else if (function?.Name == "get_random_number")
+                {
+                    bool validMin = int.TryParse(function.ParseArguments().ElementAt(0).Value.ToString(), out int minValue);
+                    bool validMax = int.TryParse(function.ParseArguments().ElementAt(1).Value.ToString(), out int maxValue);
+
+                    if (validMin && validMax)
+                    {
+                        string? randomNumber = Functions.GetRandomNumber(minValue, maxValue);
+
+                        response = string.Concat(response, randomNumber);
+                    }
+                    else
+                    {
+                        Program.BotClient?.Logger.LogWarning(Functions.AIFunctionEvent, "Failed to parse AI given values Exception");
+
+                        response = "**System:** Failed to parse AI given values to function call";
+                    }
                 }
 
                 if (image == null)
