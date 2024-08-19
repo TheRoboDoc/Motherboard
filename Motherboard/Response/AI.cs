@@ -359,6 +359,13 @@ namespace Motherboard.Response
                 return Tuple.Create<bool, string?, MemoryStream?>(false, "OpenAI service isn't on, if error presists contact RoboDoc", image);
             }
 
+            List<ToolDefinition> toolDefinitions = new List<ToolDefinition>();
+
+            foreach (FunctionDefinition functionCall in Functions.GetFunctions())
+            {
+                toolDefinitions.Add(ToolDefinition.DefineFunction(functionCall));
+            }
+
             //Sending OpenAI API request for chat reply
             ChatCompletionCreateResponse completionResult = await Program.OpenAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
@@ -369,7 +376,7 @@ namespace Motherboard.Response
                 Temperature = 1,
                 FrequencyPenalty = 1.1F,
                 PresencePenalty = 1,
-                Functions = Functions.GetFunctions()
+                Tools = toolDefinitions
             });
 
             string? response;
@@ -393,7 +400,7 @@ namespace Motherboard.Response
                     response = null;
                 }
 
-                FunctionCall? function = completionResult.Choices.First().Message.FunctionCall;
+                FunctionCall? function = completionResult.Choices?.First().Message.ToolCalls?.First().FunctionCall;
 
                 bool imageCalled = false;
 
